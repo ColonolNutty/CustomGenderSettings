@@ -2,6 +2,10 @@
 
 For more mods like this support me at my Patreon: https://www.patreon.com/colonolnutty
 
+### Disclaimer:
+
+- This is *not* an adult mod! Keep this in mind when referring to it!
+
 ### Features:
 
 - Customize the Custom Gender Options of your sims through an interaction within the game without needing to use cheats to open CAS.
