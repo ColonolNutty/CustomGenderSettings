@@ -1,5 +1,7 @@
 ## Custom Gender Settings (CGS) by ColonolNutty
 
+For more mods like this support me at my Patreon: https://www.patreon.com/colonolnutty
+
 ### Features:
 
 - Customize the Custom Gender Options of your sims through an interaction within the game without needing to use cheats to open CAS.
