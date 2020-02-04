@@ -37,10 +37,10 @@ For more mods like this support me at my Patreon: https://www.patreon.com/colono
 
 ### Translations:
 
-- (Portuguese/Português-BR)[https://www.loverslab.com/files/file/10566-tradu%C3%A7%C3%A3o-portugu%C3%AAs-br-cncustom-gender-settings-cncgs/]
+- [Portuguese/Português-BR](https://www.loverslab.com/files/file/10566-tradu%C3%A7%C3%A3o-portugu%C3%AAs-br-cncustom-gender-settings-cncgs/)
  
 
 ### Requirements:
 
 - Sims 4 version 1.56.52.1020 (Realm of Magic) or above
-- The latest version of (The Sims 4 Community Library)[https://github.com/ColonolNutty/Sims4CommunityLibrary/releases]
+- The latest version of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases)
