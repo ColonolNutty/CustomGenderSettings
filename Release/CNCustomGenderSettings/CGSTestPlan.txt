@@ -1,0 +1,6 @@
+- The mod should work with just Sims 4 Community Library installed.
+- Changing Body Frame should update a sims current outfit with the new Body Frame
+- Setting a sim to be able to become pregnant, should enable them to become pregnant
+- Setting a sim to be able to get others pregnant, should enable them to get other sims pregnant
+- Changing the clothing preferences, should change the clothing preferences of the sim (Not entirely sure the effects of this yet)
+- The interaction should only display on Human Teens, Young Adults, Adults, and Elders.

@@ -1,0 +1,38 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyMethodMayBeStaticInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyMissingOrEmptyDocstringInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E501" />
+          <option value="E127" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyProtectedMemberInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnreachableCodeInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="cncustom.wickedwhims.sex.sex_handlers.active.cnactive_sex_handler_updates.*" />
+          <option value="protocolbuffers.PersistenceBlobs_pb2.BlobSimFacialCustomizationData.*" />
+          <option value="dict.get" />
+          <option value="kinky.assault.interactions.fantasize_being_assaulted.*" />
+          <option value="wwcommon.mod_checks.basemental_drugs_mod_check.bmd_ww" />
+          <option value="wwcommon.mod_checks.wicked_perversions_mod_check.NisaK" />
+          <option value="bmd_ww" />
+          <option value="str.*" />
+          <option value="wwpets.utils.pet_trait_utils.*" />
+          <option value="wickedpets.sex.autonomy.trigger_random_sex.*" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="SpellCheckingInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
+  </profile>
+</component>
