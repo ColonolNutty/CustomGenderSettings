@@ -48,3 +48,12 @@ For more mods like this support me at my Patreon: https://www.patreon.com/colono
 
 - Sims 4 version 1.56.52.1020 (Realm of Magic) or above
 - The latest version of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases)
+
+
+### Copyright:
+
+Custom Gender Settings is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International public license (CC BY-NC-ND 4.0).
+https://creativecommons.org/licenses/by-nc-nd/4.0/
+https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+
+Copyright (c) COLONOLNUTTY
