@@ -47,8 +47,12 @@ For more mods like this support me at my Patreon: https://www.patreon.com/colono
 ### Requirements:
 
 - Sims 4 version 1.56.52.1020 (Realm of Magic) or above
-- The latest version of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases)
+- At least version 1.2.8 of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/download/v1.2.8/sims4communitylib.v1.2.8.zip)
 
+
+### Troubleshooting Steps:
+
+- If the mod is not working for you, check out [these troubleshooting steps](https://github.com/ColonolNutty/Sims4CommunityLibrary/wiki/Troubleshooting-Mods-That-Use-S4CL)
 
 ### Copyright:
 
