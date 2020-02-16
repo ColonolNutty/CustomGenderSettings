@@ -21,6 +21,8 @@ For more mods like this support me at my Patreon: https://www.patreon.com/colono
   - Body Frame
     - Masculine
     - Feminine
+  - Breasts
+    - Add and Remove Breasts on your Sims.
 - This mod will work with Wicked Whims, but it does not require or use it directly to function.
 
 
@@ -47,7 +49,7 @@ For more mods like this support me at my Patreon: https://www.patreon.com/colono
 ### Requirements:
 
 - Sims 4 version 1.56.52.1020 (Realm of Magic) or above
-- At least version 1.2.8 of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/download/v1.2.8/sims4communitylib.v1.2.8.zip)
+- At least version 1.2.10 of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/download/v1.2.10/sims4communitylib.v1.2.10.zip)
 
 
 ### Troubleshooting Steps:

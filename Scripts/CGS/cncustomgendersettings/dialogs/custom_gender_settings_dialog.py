@@ -5,13 +5,16 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
-from typing import Tuple
 from sims.sim_info import SimInfo
-from ui.ui_dialog_picker import ObjectPickerRow
+from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
+from sims4communitylib.dialogs.option_dialogs.options.common_dialog_option_context import CommonDialogOptionContext
+from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_action_option import \
+    CommonDialogActionOption
+from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_toggle_option import \
+    CommonDialogToggleOption
 from cncustomgendersettings.modinfo import ModInfo
 from cncustomgendersettings.enums.strings_enum import CGSStringId
 from cncustomgendersettings.utils.trait_utils import CGSTraitUtils
-from sims4communitylib.dialogs.choose_item_dialog import CommonChooseItemDialog, CommonChooseItemResult
 from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.enums.traits_enum import CommonTraitId
 from sims4communitylib.exceptions.common_exceptions_handler import CommonExceptionHandler
@@ -22,65 +25,83 @@ from sims4communitylib.utils.localization.common_localization_utils import Commo
 from sims4communitylib.utils.localization.common_localized_string_colors import CommonLocalizedStringColor
 from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
 
-log = CommonLogRegistry.get().register_log(ModInfo.get_identity().name, 'custom_gender_settings_dialog')
+log = CommonLogRegistry.get().register_log(ModInfo.get_identity().name, 'cgs_dialog')
 
 
 class CustomGenderSettingsDialog:
     """ A Dialog that handles custom gender settings. """
-    @classmethod
+    @staticmethod
     @CommonExceptionHandler.catch_exceptions(ModInfo.get_identity().name)
-    def open_custom_gender_settings(cls, sim_info: SimInfo):
+    def open_custom_gender_settings(sim_info: SimInfo):
         """ Open the dialog for changing custom gender settings. """
-        physical_frame_option_id = 10
-        clothing_preference_option_id = 11
-        pregnancy_option_id = 20
-        toilet_stance_option_id = 21
-
-        picker_options = list()
         current_body_frame = CommonStringId.FEMININE
         if CommonTraitUtils.has_masculine_frame(sim_info):
             current_body_frame = CommonStringId.MASCULINE
-        picker_options.append(
-            ObjectPickerRow(
-                option_id=physical_frame_option_id,
-                name=CommonLocalizationUtils.create_localized_string(CommonStringId.PHYSICAL_FRAME),
-                row_description=CommonLocalizationUtils.create_localized_string(
+
+        def _reopen_dialog():
+            CustomGenderSettingsDialog.open_custom_gender_settings(sim_info)
+
+        option_dialog = CommonChooseObjectOptionDialog(
+            CommonStringId.CUSTOM_GENDER_SETTINGS,
+            CGSStringId.CGS_CUSTOM_GENDER_SETTINGS_DESCRIPTION,
+            mod_identity=ModInfo.get_identity()
+        )
+
+        def _on_physical_frame_chosen():
+            CustomGenderSettingsDialog._flip_traits_and_update_outfits(
+                sim_info,
+                CommonTraitId.GENDER_OPTIONS_FRAME_MASCULINE,
+                CommonTraitId.GENDER_OPTIONS_FRAME_FEMININE
+            )
+            _reopen_dialog()
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CommonStringId.PHYSICAL_FRAME,
                     CGSStringId.CGS_CURRENT,
-                    tokens=(CommonLocalizationUtils.create_localized_string(current_body_frame),)
+                    description_tokens=(current_body_frame,),
+                    icon=CommonIconUtils.load_arrow_right_icon()
                 ),
-                row_tooltip=None,
-                icon=CommonIconUtils.load_arrow_right_icon(),
-                tag=physical_frame_option_id
+                on_chosen=_on_physical_frame_chosen
             )
         )
 
         current_clothing = CommonStringId.FEMININE
         if CommonTraitUtils.prefers_menswear(sim_info):
             current_clothing = CommonStringId.MASCULINE
-        picker_options.append(
-            ObjectPickerRow(
-                option_id=clothing_preference_option_id,
-                name=CommonLocalizationUtils.create_localized_string(CommonStringId.CLOTHING_PREFERENCE),
-                row_description=CommonLocalizationUtils.create_localized_string(
+
+        def _on_clothing_preference_chosen():
+            CustomGenderSettingsDialog._flip_traits_and_update_outfits(
+                sim_info,
+                CommonTraitId.GENDER_OPTIONS_CLOTHING_MENS_WEAR,
+                CommonTraitId.GENDER_OPTIONS_CLOTHING_WOMENS_WEAR
+            )
+            _reopen_dialog()
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CommonStringId.CLOTHING_PREFERENCE,
                     CGSStringId.CGS_CURRENT,
-                    tokens=(CommonLocalizationUtils.create_localized_string(current_clothing),)
+                    description_tokens=(current_clothing,),
+                    icon=CommonIconUtils.load_arrow_right_icon()
                 ),
-                row_tooltip=None,
-                icon=CommonIconUtils.load_arrow_right_icon(),
-                tag=clothing_preference_option_id
+                on_chosen=_on_clothing_preference_chosen
             )
         )
 
-        picker_options.append(
-            ObjectPickerRow(
-                option_id=pregnancy_option_id,
-                name=CommonLocalizationUtils.create_localized_string(CGSStringId.CGS_PREGNANCY_OPTIONS_NAME),
-                row_description=CommonLocalizationUtils.create_localized_string(
-                    CGSStringId.CGS_PREGNANCY_OPTIONS_DESCRIPTION
+        def _on_pregnancy_option_chosen():
+            CustomGenderSettingsDialog.open_pregnancy_options(sim_info)
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_PREGNANCY_OPTIONS_NAME,
+                    CGSStringId.CGS_PREGNANCY_OPTIONS_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
                 ),
-                row_tooltip=None,
-                icon=CommonIconUtils.load_arrow_navigate_into_icon(),
-                tag=pregnancy_option_id
+                on_chosen=_on_pregnancy_option_chosen
             )
         )
 
@@ -91,126 +112,95 @@ class CustomGenderSettingsDialog:
         else:
             icon = CommonIconUtils.load_unchecked_square_icon()
         text = CGSStringId.CGS_TOGGLE_CAN_USE_TOILET_STANDING_DESCRIPTION
-        picker_options.append(
-            ObjectPickerRow(
-                option_id=toilet_stance_option_id,
-                name=CommonLocalizationUtils.create_localized_string(title),
-                row_description=CommonLocalizationUtils.create_localized_string(text),
-                row_tooltip=None,
-                icon=icon,
-                tag=toilet_stance_option_id
+
+        def _on_toilet_preference_chosen():
+            CustomGenderSettingsDialog._flip_traits_and_update_outfits(
+                sim_info,
+                CommonTraitId.GENDER_OPTIONS_TOILET_STANDING,
+                CommonTraitId.GENDER_OPTIONS_TOILET_SITTING
+            )
+            _reopen_dialog()
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    title,
+                    text,
+                    icon=icon
+                ),
+                on_chosen=_on_toilet_preference_chosen
             )
         )
 
-        @CommonExceptionHandler.catch_exceptions(ModInfo.get_identity().name)
-        def _option_picked(picked_option: int, picker_result: CommonChooseItemResult):
-            if picked_option is None or CommonChooseItemResult.is_error(picker_result):
-                return
-            if picked_option == physical_frame_option_id:
-                CustomGenderSettingsDialog._flip_traits_and_update_outfits(
-                    sim_info,
-                    CommonTraitId.GENDER_OPTIONS_FRAME_MASCULINE,
-                    CommonTraitId.GENDER_OPTIONS_FRAME_FEMININE
-                )
-            elif picked_option == clothing_preference_option_id:
-                CustomGenderSettingsDialog._flip_traits_and_update_outfits(
-                    sim_info,
-                    CommonTraitId.GENDER_OPTIONS_CLOTHING_MENS_WEAR,
-                    CommonTraitId.GENDER_OPTIONS_CLOTHING_WOMENS_WEAR
-                )
-            elif picked_option == pregnancy_option_id:
-                CustomGenderSettingsDialog.open_pregnancy_options(sim_info)
-                return
-            elif picked_option == toilet_stance_option_id:
-                CustomGenderSettingsDialog._flip_traits_and_update_outfits(
-                    sim_info,
-                    CommonTraitId.GENDER_OPTIONS_TOILET_STANDING,
-                    CommonTraitId.GENDER_OPTIONS_TOILET_SITTING
-                )
-            CustomGenderSettingsDialog.open_custom_gender_settings(sim_info)
+        option_dialog.show(sim_info=sim_info)
 
-        dialog = CommonChooseItemDialog(
-            CommonStringId.CUSTOM_GENDER_SETTINGS,
-            CGSStringId.CGS_CUSTOM_GENDER_SETTINGS_DESCRIPTION,
-            tuple(picker_options)
-        )
-        dialog.show(on_item_chosen=_option_picked)
-
-    @classmethod
-    def open_pregnancy_options(cls, sim_info: SimInfo):
+    @staticmethod
+    def open_pregnancy_options(sim_info: SimInfo):
         """
             Open Custom Gender Pregnancy settings.
         """
         can_get_others_pregnant_id = 10
         can_get_pregnant_id = 11
 
-        can_get_others_pregnant_option = CustomGenderSettingsDialog._get_trait_option(
-            sim_info,
-            can_get_others_pregnant_id,
-            CGSStringId.CGS_CAN_GET_OTHERS_PREGNANT_NAME,
-            CGSStringId.CGS_CAN_GET_OTHERS_PREGNANT_DESCRIPTION,
-            CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_IMPREGNATE
-        )
-        can_get_pregnant_option = CustomGenderSettingsDialog._get_trait_option(
-            sim_info,
-            can_get_pregnant_id,
-            CGSStringId.CGS_CAN_BECOME_PREGNANT_NAME,
-            CGSStringId.CGS_CAN_BECOME_PREGNANT_DESCRIPTION,
-            CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_BE_IMPREGNATED
-        )
+        def _on_close():
+            CustomGenderSettingsDialog.open_custom_gender_settings(sim_info)
 
-        @CommonExceptionHandler.catch_exceptions(ModInfo.get_identity().name)
-        def _option_chosen(picked_option: int, picker_result: CommonChooseItemResult):
-            if picked_option is None or picker_result == CommonChooseItemResult.DIALOG_CANCELLED:
-                CustomGenderSettingsDialog.open_custom_gender_settings(sim_info)
-                return
-            if picked_option == can_get_others_pregnant_id:
-                CGSTraitUtils.flip_traits(
-                    sim_info,
-                    CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_IMPREGNATE,
-                    CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_NOT_IMPREGNATE
-                )
-            elif picked_option == can_get_pregnant_id:
-                CGSTraitUtils.flip_traits(
-                    sim_info,
-                    CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_BE_IMPREGNATED,
-                    CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_NOT_BE_IMPREGNATED
-                )
+        def _reopen_dialog():
             CustomGenderSettingsDialog.open_pregnancy_options(sim_info)
 
-        picker_rows: Tuple[ObjectPickerRow] = [can_get_others_pregnant_option, can_get_pregnant_option]
-        dialog = CommonChooseItemDialog(
+        option_dialog = CommonChooseObjectOptionDialog(
             CGSStringId.CGS_PREGNANCY_OPTIONS_NAME,
             CGSStringId.CGS_PREGNANCY_OPTIONS_DESCRIPTION,
-            tuple(picker_rows)
+            mod_identity=ModInfo.get_identity(),
+            on_close=_on_close
         )
-        dialog.show(on_item_chosen=_option_chosen)
+
+        def _can_get_others_pregnant_chosen(option_identifier: str, can_get_others_pregnant: bool):
+            log.format(option_identifier=option_identifier, can_get_others_pregnant=can_get_others_pregnant)
+            CGSTraitUtils.flip_traits(
+                sim_info,
+                CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_IMPREGNATE,
+                CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_NOT_IMPREGNATE
+            )
+            _reopen_dialog()
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'CanGetOthersPregnant',
+                CommonTraitUtils.has_trait(sim_info, CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_IMPREGNATE),
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_CAN_GET_OTHERS_PREGNANT_NAME,
+                    CGSStringId.CGS_CAN_GET_OTHERS_PREGNANT_DESCRIPTION
+                ),
+                on_chosen=_can_get_others_pregnant_chosen
+            )
+        )
+
+        def _can_get_pregnant_chosen(option_identifier: str, can_get_pregnant: bool):
+            log.format(option_identifier=option_identifier, can_get_pregnant=can_get_pregnant)
+            CGSTraitUtils.flip_traits(
+                sim_info,
+                CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_BE_IMPREGNATED,
+                CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_NOT_BE_IMPREGNATED
+            )
+            _reopen_dialog()
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'CanGetPregnant',
+                CommonTraitUtils.has_trait(sim_info, CommonTraitId.GENDER_OPTIONS_PREGNANCY_CAN_BE_IMPREGNATED),
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_CAN_BECOME_PREGNANT_NAME,
+                    CGSStringId.CGS_CAN_BECOME_PREGNANT_DESCRIPTION
+                ),
+                on_chosen=_can_get_pregnant_chosen
+            )
+        )
+
+        option_dialog.show(sim_info=sim_info)
 
     @staticmethod
-    def _get_trait_option(
-            sim_info: SimInfo,
-            option_id: int,
-            option_name_id: int,
-            option_description_id: int,
-            trait: int
-    ) -> ObjectPickerRow:
-        name = CommonLocalizationUtils.create_localized_string(option_name_id)
-        if CommonTraitUtils.has_trait(sim_info, trait):
-            name = CommonLocalizationUtils.create_localized_string(name, text_color=CommonLocalizedStringColor.GREEN)
-            icon = CommonIconUtils.load_checked_square_icon()
-        else:
-            icon = CommonIconUtils.load_unchecked_square_icon()
-        return ObjectPickerRow(
-            option_id=option_id,
-            name=name,
-            row_description=CommonLocalizationUtils.create_localized_string(option_description_id),
-            row_tooltip=None,
-            icon=icon,
-            tag=option_id
-        )
-
-    @classmethod
-    def _flip_traits_and_update_outfits(cls, sim_info: SimInfo, trait_one: int, trait_two: int) -> bool:
+    def _flip_traits_and_update_outfits(sim_info: SimInfo, trait_one: int, trait_two: int) -> bool:
         # Has Trait One
         if CGSTraitUtils.flip_traits(sim_info, trait_one, trait_two):
             CommonOutfitUtils.update_outfits(sim_info)
