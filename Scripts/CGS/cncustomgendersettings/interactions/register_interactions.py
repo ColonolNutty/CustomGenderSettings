@@ -6,14 +6,14 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from typing import Tuple
+
+from cncustomgendersettings.utils.cgs_setting_utils import CGSSettingUtils
 from objects.script_object import ScriptObject
 from sims.sim import Sim
 from sims4communitylib.services.interactions.interaction_registration_service import CommonInteractionRegistry, \
     CommonInteractionType, CommonScriptObjectInteractionHandler
 from sims4communitylib.utils.common_type_utils import CommonTypeUtils
-from sims4communitylib.utils.sims.common_age_utils import CommonAgeUtils
 from sims4communitylib.utils.sims.common_sim_utils import CommonSimUtils
-from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 from cncustomgendersettings.enums.interactions_enum import CGSInteractionId
 
 
@@ -34,4 +34,4 @@ class _CGSRegisterInteractionHandler(CommonScriptObjectInteractionHandler):
             return False
         script_object: Sim = script_object
         sim_info = CommonSimUtils.get_sim_info(script_object)
-        return CommonAgeUtils.is_teen_adult_or_elder(sim_info) and not CommonSpeciesUtils.is_pet(sim_info)
+        return CGSSettingUtils.is_enabled_for_custom_gender_setting_interactions(sim_info)
