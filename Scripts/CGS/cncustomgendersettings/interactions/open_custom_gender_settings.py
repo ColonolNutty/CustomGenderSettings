@@ -17,7 +17,6 @@ from sims4communitylib.classes.interactions.common_immediate_super_interaction i
 from sims4communitylib.utils.common_log_registry import CommonLogRegistry
 from sims4communitylib.utils.common_time_utils import CommonTimeUtils
 from sims4communitylib.utils.common_type_utils import CommonTypeUtils
-from sims4communitylib.utils.sims.common_age_utils import CommonAgeUtils
 from sims4communitylib.utils.sims.common_sim_utils import CommonSimUtils
 
 log = CommonLogRegistry.get().register_log(ModInfo.get_identity().name, 'custom_gender_settings_interaction')
