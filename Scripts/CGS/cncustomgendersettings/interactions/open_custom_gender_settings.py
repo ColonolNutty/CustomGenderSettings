@@ -9,6 +9,7 @@ from typing import Any
 
 from cncustomgendersettings.dialogs.custom_gender_settings_dialog import CustomGenderSettingsDialog
 from cncustomgendersettings.modinfo import ModInfo
+from cncustomgendersettings.utils.cgs_setting_utils import CGSSettingUtils
 from event_testing.results import TestResult
 from interactions.context import InteractionContext
 from sims.sim import Sim
@@ -28,20 +29,24 @@ class OpenCustomGenderSettingsInteraction(CommonImmediateSuperInteraction):
     # noinspection PyMissingOrEmptyDocstring
     @classmethod
     def on_test(cls, interaction_sim: Sim, interaction_target: Any, interaction_context: InteractionContext, **kwargs) -> TestResult:
-        log.debug('Running {} on_test.'.format(OpenCustomGenderSettingsInteraction.__name__))
-        if not CommonTypeUtils.is_sim_instance(interaction_target):
-            log.debug('Failed, cannot open custom gender settings for objects.')
-            return cls.create_test_result(False, 'Cannot open custom gender settings for objects.')
+        log.debug('Running \'{}\' on_test.'.format(OpenCustomGenderSettingsInteraction.__name__))
+        if interaction_target is None or not CommonTypeUtils.is_sim_instance(interaction_target):
+            log.debug('Failed, Target is not a Sim.')
+            return TestResult.NONE
+        sim_info = CommonSimUtils.get_sim_info(interaction_sim)
+        if not CGSSettingUtils.is_enabled_for_custom_gender_setting_interactions(sim_info):
+            log.debug('Failed, Active Sim is not enabled for CGS interactions.')
+            return TestResult.NONE
         target_sim_info = CommonSimUtils.get_sim_info(interaction_target)
-        if not CommonAgeUtils.is_teen_adult_or_elder(target_sim_info):
-            log.debug('Failed age check.')
+        if not CGSSettingUtils.is_enabled_for_custom_gender_setting_interactions(target_sim_info):
+            log.debug('Failed, Target Sim is not enabled for CGS interactions.')
             return TestResult.NONE
         log.debug('Success.')
         return TestResult.TRUE
 
     # noinspection PyMissingOrEmptyDocstring
     def on_started(self, interaction_sim: Sim, interaction_target: Any) -> bool:
-        log.debug('Running {} on_started.'.format(OpenCustomGenderSettingsInteraction.__name__))
+        log.debug('Running \'{}\' on_started.'.format(OpenCustomGenderSettingsInteraction.__name__))
         if not CommonTypeUtils.is_sim_instance(interaction_target):
             log.debug('Target is not a sim.')
             return False

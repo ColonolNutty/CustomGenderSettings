@@ -6,6 +6,7 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from sims.sim_info import SimInfo
+from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
 from sims4communitylib.dialogs.option_dialogs.options.common_dialog_option_context import CommonDialogOptionContext
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_action_option import \
@@ -23,6 +24,7 @@ from sims4communitylib.utils.common_icon_utils import CommonIconUtils
 from sims4communitylib.utils.common_log_registry import CommonLogRegistry
 from sims4communitylib.utils.localization.common_localization_utils import CommonLocalizationUtils
 from sims4communitylib.utils.localization.common_localized_string_colors import CommonLocalizedStringColor
+from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
 
 log = CommonLogRegistry.get().register_log(ModInfo.get_identity().name, 'cgs_dialog')
@@ -91,6 +93,38 @@ class CustomGenderSettingsDialog:
             )
         )
 
+        def _on_has_breasts_chosen(option_identifier: str, has_breasts: bool):
+            log.format(option_identifier=option_identifier, has_breasts=has_breasts)
+            CommonTraitUtils.remove_trait(sim_info, CommonTraitId.BREASTS_FORCE_OFF)
+            CommonTraitUtils.remove_trait(sim_info, CommonTraitId.BREASTS_FORCE_ON)
+            if not has_breasts:
+                if CommonGenderUtils.is_female(sim_info):
+                    CommonTraitUtils.add_trait(sim_info, CommonTraitId.BREASTS_FORCE_OFF)
+            else:
+                if CommonGenderUtils.is_male(sim_info):
+                    CommonTraitUtils.add_trait(sim_info, CommonTraitId.BREASTS_FORCE_ON)
+            CommonOutfitUtils.update_outfits(sim_info)
+            CommonOkDialog(
+                CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_NAME,
+                CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_DESCRIPTION
+            ).show(on_acknowledged=_reopen_dialog)
+
+        has_vanilla_breasts = False
+        if CommonGenderUtils.is_female(sim_info):
+            has_vanilla_breasts = not CommonTraitUtils.has_trait(sim_info, CommonTraitId.BREASTS_FORCE_OFF)
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'HasBreasts',
+                CommonTraitUtils.has_trait(sim_info, CommonTraitId.BREASTS_FORCE_ON) or has_vanilla_breasts,
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_TOGGLE_BREASTS_NAME,
+                    CGSStringId.CGS_TOGGLE_BREASTS_DESCRIPTION
+                ),
+                on_chosen=_on_has_breasts_chosen
+            )
+        )
+
         def _on_pregnancy_option_chosen():
             CustomGenderSettingsDialog.open_pregnancy_options(sim_info)
 
@@ -139,8 +173,6 @@ class CustomGenderSettingsDialog:
         """
             Open Custom Gender Pregnancy settings.
         """
-        can_get_others_pregnant_id = 10
-        can_get_pregnant_id = 11
 
         def _on_close():
             CustomGenderSettingsDialog.open_custom_gender_settings(sim_info)
