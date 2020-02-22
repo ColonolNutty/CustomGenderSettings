@@ -23,4 +23,4 @@ tunings
 **/*.ts4script
 **/*.lnk
 **/*.xml___jb_old___
-Scripts/ScriptLibrary/sims4communitylib
+Scripts/ScriptLibrary/**/*
