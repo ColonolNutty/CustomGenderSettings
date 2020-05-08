@@ -6,14 +6,10 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from typing import Tuple
-
-from cncustomgendersettings.utils.cgs_setting_utils import CGSSettingUtils
 from objects.script_object import ScriptObject
-from sims.sim import Sim
 from sims4communitylib.services.interactions.interaction_registration_service import CommonInteractionRegistry, \
     CommonInteractionType, CommonScriptObjectInteractionHandler
 from sims4communitylib.utils.common_type_utils import CommonTypeUtils
-from sims4communitylib.utils.sims.common_sim_utils import CommonSimUtils
 from cncustomgendersettings.enums.interactions_enum import CGSInteractionId
 
 
@@ -30,8 +26,4 @@ class _CGSRegisterInteractionHandler(CommonScriptObjectInteractionHandler):
 
     # noinspection PyMissingOrEmptyDocstring
     def should_add(self, script_object: ScriptObject, *args, **kwargs) -> bool:
-        if not CommonTypeUtils.is_sim_instance(script_object):
-            return False
-        script_object: Sim = script_object
-        sim_info = CommonSimUtils.get_sim_info(script_object)
-        return CGSSettingUtils.is_enabled_for_custom_gender_setting_interactions(sim_info)
+        return CommonTypeUtils.is_sim_or_sim_info(script_object)

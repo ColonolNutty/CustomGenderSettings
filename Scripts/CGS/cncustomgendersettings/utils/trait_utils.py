@@ -11,8 +11,7 @@ from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
 
 class CGSTraitUtils:
     """ Trait Utilities used by the CGS mod. """
-    @staticmethod
-    def flip_traits(sim_info: SimInfo, trait_one: int, trait_two: int) -> bool:
+    def flip_traits(self, sim_info: SimInfo, trait_one: int, trait_two: int) -> bool:
         """ Flip two traits, adding one while removing the other. """
         # Has Trait One
         if CommonTraitUtils.has_trait(sim_info, trait_one):

@@ -24,3 +24,4 @@ tunings
 **/*.lnk
 **/*.xml___jb_old___
 Scripts/ScriptLibrary/**/*
+Libraries/**/*
