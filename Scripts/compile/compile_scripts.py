@@ -9,4 +9,4 @@ Copyright (c) COLONOLNUTTY
 from Utilities.compiler import compile_module
 
 
-compile_module(root='..\\..\\..\\Release\\CNCustomGenderSettings', mod_scripts_folder='..', include_folders=('cncustomgendersettings',), mod_name='cn_customgendersettings')
+compile_module(root='..\\..\\Release\\CNCustomGenderSettings', mod_scripts_folder='..', include_folders=('cncustomgendersettings',), mod_name='cn_customgendersettings')
