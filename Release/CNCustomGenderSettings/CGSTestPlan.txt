@@ -2,5 +2,8 @@
 - Changing Body Frame should update a sims current outfit with the new Body Frame
 - Setting a sim to be able to become pregnant, should enable them to become pregnant
 - Setting a sim to be able to get others pregnant, should enable them to get other sims pregnant
+- Setting a sim to force breasts should force breasts on them when they travel to a new zone.
+- Setting a Pet Sim to Fixed reproduction, should prevent them from getting Pets pregnant.
+- Setting a Pet Sim to Natural reproduction, should allow them to get Pets pregnant.
 - Changing the clothing preferences, should change the clothing preferences of the sim (Not entirely sure the effects of this yet)
-- The interaction should only display on Human Teens, Young Adults, Adults, and Elders.
+- The interaction should only display on Teens, Young Adults, Adults, and Elders both Human and Pets.

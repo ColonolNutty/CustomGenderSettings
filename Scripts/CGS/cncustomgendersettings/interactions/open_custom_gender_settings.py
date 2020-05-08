@@ -14,12 +14,10 @@ from event_testing.results import TestResult
 from interactions.context import InteractionContext
 from sims.sim import Sim
 from sims4communitylib.classes.interactions.common_immediate_super_interaction import CommonImmediateSuperInteraction
-from sims4communitylib.utils.common_log_registry import CommonLogRegistry
+from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.utils.common_time_utils import CommonTimeUtils
 from sims4communitylib.utils.common_type_utils import CommonTypeUtils
 from sims4communitylib.utils.sims.common_sim_utils import CommonSimUtils
-
-log = CommonLogRegistry.get().register_log(ModInfo.get_identity().name, 'custom_gender_settings_interaction')
 
 
 class OpenCustomGenderSettingsInteraction(CommonImmediateSuperInteraction):
@@ -27,29 +25,43 @@ class OpenCustomGenderSettingsInteraction(CommonImmediateSuperInteraction):
 
     # noinspection PyMissingOrEmptyDocstring
     @classmethod
+    def get_mod_identity(cls) -> CommonModIdentity:
+        return ModInfo.get_identity()
+
+    # noinspection PyMissingOrEmptyDocstring
+    @classmethod
+    def get_log_identifier(cls) -> str:
+        return 'cgs_open_settings'
+
+    @classmethod
+    def _get_setting_utils(cls) -> CGSSettingUtils:
+        return CGSSettingUtils()
+
+    # noinspection PyMissingOrEmptyDocstring
+    @classmethod
     def on_test(cls, interaction_sim: Sim, interaction_target: Any, interaction_context: InteractionContext, **kwargs) -> TestResult:
-        log.debug('Running \'{}\' on_test.'.format(OpenCustomGenderSettingsInteraction.__name__))
+        cls.get_log().debug('Running \'{}\' on_test.'.format(OpenCustomGenderSettingsInteraction.__name__))
         if interaction_target is None or not CommonTypeUtils.is_sim_instance(interaction_target):
-            log.debug('Failed, Target is not a Sim.')
+            cls.get_log().debug('Failed, Target is not a Sim.')
             return TestResult.NONE
         sim_info = CommonSimUtils.get_sim_info(interaction_sim)
-        if not CGSSettingUtils.is_enabled_for_custom_gender_setting_interactions(sim_info):
-            log.debug('Failed, Active Sim is not enabled for CGS interactions.')
+        if not cls._get_setting_utils().is_enabled_for_interactions(sim_info):
+            cls.get_log().debug('Failed, Active Sim is not enabled for CGS interactions.')
             return TestResult.NONE
         target_sim_info = CommonSimUtils.get_sim_info(interaction_target)
-        if not CGSSettingUtils.is_enabled_for_custom_gender_setting_interactions(target_sim_info):
-            log.debug('Failed, Target Sim is not enabled for CGS interactions.')
+        if not cls._get_setting_utils().is_enabled_for_interactions(target_sim_info):
+            cls.get_log().debug('Failed, Target Sim is not enabled for CGS interactions.')
             return TestResult.NONE
-        log.debug('Success.')
+        cls.get_log().debug('Success, can open Custom Gender Settings.')
         return TestResult.TRUE
 
     # noinspection PyMissingOrEmptyDocstring
     def on_started(self, interaction_sim: Sim, interaction_target: Any) -> bool:
-        log.debug('Running \'{}\' on_started.'.format(OpenCustomGenderSettingsInteraction.__name__))
+        self.log.debug('Running \'{}\' on_started.'.format(OpenCustomGenderSettingsInteraction.__name__))
         if not CommonTypeUtils.is_sim_instance(interaction_target):
-            log.debug('Target is not a sim.')
+            self.log.debug('Target is not a sim.')
             return False
         CommonTimeUtils.pause_the_game()
         target_sim_info = CommonSimUtils.get_sim_info(interaction_target)
-        CustomGenderSettingsDialog.open_custom_gender_settings(target_sim_info)
+        CustomGenderSettingsDialog().open(target_sim_info)
         return True
