@@ -9,7 +9,7 @@ from typing import Any
 
 from cncustomgendersettings.dialogs.custom_gender_settings_dialog import CustomGenderSettingsDialog
 from cncustomgendersettings.modinfo import ModInfo
-from cncustomgendersettings.utils.cgs_setting_utils import CGSSettingUtils
+from cncustomgendersettings.settings.setting_utils import CGSSettingUtils
 from event_testing.results import TestResult
 from interactions.context import InteractionContext
 from sims.sim import Sim
