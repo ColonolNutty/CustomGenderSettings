@@ -11,7 +11,7 @@ try:
     from cncustomgendersettings.enums.strings_enum import CGSStringId
     from cncustomgendersettings.interactions.open_custom_gender_settings import OpenCustomGenderSettingsInteraction
     from cncustomgendersettings.modinfo import ModInfo
-    from cncustomgendersettings.utils.cgs_setting_utils import CGSSettingUtils
+    from cncustomgendersettings.settings.setting_utils import CGSSettingUtils
     from sims4communitylib.enums.strings_enum import CommonStringId
     from typing import Callable, Any, Union
     from sims.sim_info import SimInfo
@@ -36,7 +36,7 @@ try:
 
         # noinspection PyMissingOrEmptyDocstring
         @property
-        def title(self) -> Union[int, str, LocalizedString, None]:
+        def title(self) -> CommonStringId:
             return CommonStringId.CUSTOM_GENDER_SETTINGS
 
         # noinspection PyMissingOrEmptyDocstring
