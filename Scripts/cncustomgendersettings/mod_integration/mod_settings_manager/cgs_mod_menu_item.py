@@ -51,7 +51,7 @@ try:
 
         # noinspection PyMissingOrEmptyDocstring
         def is_available_for(self, source_sim_info: SimInfo, target: Any=None) -> bool:
-            self.log.debug('Checking if CGS is available for \'{}\' and Target \'{}\'.'.format(CommonSimNameUtils.get_full_name(source_sim_info), target))
+            self.log.debug('Checking if {} is available for \'{}\' and Target \'{}\'.'.format(self.mod_identity.name, CommonSimNameUtils.get_full_name(source_sim_info), target))
             if target is None or not CommonTypeUtils.is_sim_or_sim_info(target):
                 self.log.debug('Failed, Target is not a Sim.')
                 return False
@@ -74,9 +74,9 @@ try:
             on_close: Callable[..., Any]=CommonFunctionUtils.noop,
             **kwargs
         ):
-            self.log.debug('Showing CGS Dialog.')
+            self.log.debug('Showing {} Dialog.'.format(self.mod_identity.name))
             target_sim_info = CommonSimUtils.get_sim_info(target)
-            CustomGenderSettingsDialog(on_close=on_close).open(target_sim_info)
+            CustomGenderSettingsDialog(target_sim_info, on_close=on_close).open()
 
 
     S4MSMModSettingsRegistry().register_menu_item(_CGSMSMMenuItem())

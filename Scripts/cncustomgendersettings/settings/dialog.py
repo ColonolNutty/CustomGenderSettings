@@ -5,9 +5,7 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
-from typing import Any, Callable
-
-from cncustomgendersettings.enums.global_gender_options import CGSGender
+from typing import Any, Callable, Union
 from cncustomgendersettings.enums.strings_enum import CGSStringId
 from cncustomgendersettings.global_gender_options_injection import _CGSUpdateGenderOptions
 from cncustomgendersettings.modinfo import ModInfo
@@ -15,6 +13,7 @@ from cncustomgendersettings.persistence.cgs_data_manager_utils import CGSDataMan
 from cncustomgendersettings.settings.settings import CGSGlobalSetting
 from protocolbuffers.Localization_pb2 import LocalizedString
 from sims.sim_info import SimInfo
+from sims4communitylib.dialogs.ok_cancel_dialog import CommonOkCancelDialog
 from sims4communitylib.dialogs.option_dialogs.options.common_dialog_option_context import CommonDialogOptionContext
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_action_option import \
     CommonDialogActionOption
@@ -35,7 +34,6 @@ class CGSGlobalSettingsDialog(HasLog):
         self._sim_info = sim_info
         self._on_close = on_close
         self._data_store = CGSDataManagerUtils().get_global_mod_settings_data_store()
-        self._restart_required = False
 
     # noinspection PyMissingOrEmptyDocstring
     @property
@@ -53,7 +51,7 @@ class CGSGlobalSettingsDialog(HasLog):
             if self._on_close is not None:
                 self._on_close()
 
-        def _reopen() -> None:
+        def _reopen(*_, **__) -> None:
             self.open()
 
         option_dialog = CommonChooseObjectOptionDialog(
@@ -64,23 +62,43 @@ class CGSGlobalSettingsDialog(HasLog):
         )
 
         @CommonExceptionHandler.catch_exceptions(self.mod_identity)
-        def _on_force_all_chosen(_: str, picked_option: int):
+        def _on_force_all_chosen(_: str, picked_option: Union[int, bool]):
             if picked_option is None:
                 return
-            self._data_store.set_value_by_key(_, picked_option)
-            if picked_option == CGSGender.DISABLED:
+            if picked_option == -1:
+                self._data_store.set_value_by_key(_, None)
                 _reopen()
                 return
 
-            for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
-                _CGSUpdateGenderOptions()._update_gender_options(sim_info)
-            _reopen()
+            @CommonExceptionHandler.catch_exceptions(self.mod_identity)
+            def _on_ok(_d):
+                self.log.debug('Ok chosen {}, \'{}\''.format(picked_option, _))
+                self._data_store.set_value_by_key(_, picked_option)
+                self.log.format_with_message('set value with', val=self._data_store.get_value_by_key(_))
 
-        current_force_all_val = self._data_store.get_value_by_key(CGSGlobalSetting.FORCE_ALL_SIMS_TO_GENDER)
+                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
+                    _CGSUpdateGenderOptions()._update_gender_options(sim_info)
+                _reopen()
+
+            def _on_cancel(_d):
+                self.log.debug('Cancel chosen')
+                _reopen()
+
+            CommonOkCancelDialog(
+                CGSStringId.PLEASE_CONFIRM_NAME,
+                CGSStringId.PLEASE_CONFIRM_DESCRIPTION,
+                ok_text_identifier=CGSStringId.YES_UPDATE_ALL_SIMS,
+                cancel_text_identifier=CGSStringId.NO
+            ).show(
+                on_ok_selected=_on_ok,
+                on_cancel_selected=_on_cancel
+            )
+
+        current_force_all_val = self._data_store.get_value_by_key(CGSGlobalSetting.ALL_SIMS_FORCE_AS_MALE)
         force_all_selected_string = CGSStringId.DISABLED
-        if current_force_all_val == CGSGender.MALE:
+        if current_force_all_val is True:
             force_all_selected_string = CGSStringId.MALE
-        elif current_force_all_val == CGSGender.FEMALE:
+        elif current_force_all_val is False:
             force_all_selected_string = CGSStringId.FEMALE
 
         option_dialog.add_option(
@@ -94,21 +112,314 @@ class CGSGlobalSettingsDialog(HasLog):
                     CGSStringId.FORCE_ALL_SIMS_TO_GENDER_NAME,
                     CGSStringId.FORCE_ALL_SIMS_TO_GENDER_DESCRIPTION,
                     force_all_selected_string,
-                    CGSGlobalSetting.FORCE_ALL_SIMS_TO_GENDER,
+                    CGSGlobalSetting.ALL_SIMS_FORCE_AS_MALE,
                     CGSStringId.MALE,
                     CGSStringId.FEMALE,
-                    CGSGender.MALE,
-                    CGSGender.FEMALE,
-                    CGSGender.DISABLED,
                     on_chosen=_on_force_all_chosen,
                     on_close=_reopen
                 )
             )
         )
 
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.ALL_MALE_SIM_OPTIONS,
+                    CGSStringId.ALL_MALE_SIM_OPTIONS_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
+                ),
+                on_chosen=lambda *_, **__: self._all_male_options(on_close=_reopen)
+            )
+        )
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.ALL_FEMALE_SIM_OPTIONS,
+                    CGSStringId.ALL_FEMALE_SIM_OPTIONS_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
+                ),
+                on_chosen=lambda *_, **__: self._all_female_options(on_close=_reopen)
+            )
+        )
+
         option_dialog.show()
 
-    def _select_option(self, title: int, description: LocalizedString, current_string: int, setting_name: str, on_name: int, off_name: int, on: Any, off: Any, disabled: Any, on_chosen: Callable[[str, int], Any], on_close: Callable[[], Any]=None):
+    def _all_male_options(self, on_close: Callable[[], Any]=None):
+        def _on_close() -> None:
+            if on_close is not None:
+                on_close()
+
+        def _reopen() -> None:
+            self._all_male_options(on_close=on_close)
+
+        option_dialog = CommonChooseObjectOptionDialog(
+            CGSStringId.ALL_MALE_SIM_OPTIONS,
+            CGSStringId.ALL_MALE_SIM_OPTIONS_DESCRIPTION,
+            mod_identity=self.mod_identity,
+            on_close=_on_close
+        )
+
+        @CommonExceptionHandler.catch_exceptions(self.mod_identity)
+        def _on_chosen(_: str, picked_option: Union[int, bool]):
+            if picked_option is None:
+                return
+            if picked_option == -1:
+                self._data_store.set_value_by_key(_, None)
+                _reopen()
+                return
+
+            @CommonExceptionHandler.catch_exceptions(self.mod_identity)
+            def _on_ok(_d):
+                self._data_store.set_value_by_key(_, picked_option)
+
+                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
+                    _CGSUpdateGenderOptions()._update_gender_options(sim_info)
+                _reopen()
+
+            @CommonExceptionHandler.catch_exceptions(self.mod_identity)
+            def _on_cancel(_d):
+                _reopen()
+
+            CommonOkCancelDialog(
+                CGSStringId.PLEASE_CONFIRM_NAME,
+                CGSStringId.PLEASE_CONFIRM_DESCRIPTION,
+                ok_text_identifier=CGSStringId.YES_UPDATE_ALL_SIMS,
+                cancel_text_identifier=CGSStringId.NO
+            ).show(
+                on_ok_selected=_on_ok,
+                on_cancel_selected=_on_cancel
+            )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.TOILET_USAGE_STRING_NAME,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING,
+            CGSStringId.TOILET_STANDING,
+            CGSStringId.TOILET_SITTING,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.CLOTHING_PREFERENCE_STRING_NAME,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_PREFER_MENSWEAR,
+            CGSStringId.PREFER_MENSWEAR,
+            CGSStringId.PREFER_WOMENSWEAR,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.BODY_FRAME_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_HAVE_MASCULINE_FRAME,
+            CGSStringId.MASCULINE,
+            CGSStringId.FEMININE,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.REPRODUCTIVE_SETTINGS_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_CAN_REPRODUCE,
+            CGSStringId.CAN_REPRODUCE,
+            CGSStringId.CANNOT_REPRODUCE,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.IMPREGNATE_OTHERS_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_CAN_IMPREGNATE,
+            CGSStringId.CAN_IMPREGNATE,
+            CGSStringId.CANNOT_IMPREGNATE,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.IMPREGNATED_BY_OTHERS_STRINGS,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_CAN_BE_IMPREGNATED,
+            CGSStringId.CAN_BE_IMPREGNATED,
+            CGSStringId.CANNOT_BE_IMPREGNATED,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        option_dialog.show()
+
+    def _all_female_options(self, on_close: Callable[[], Any]=None):
+        def _on_close() -> None:
+            if on_close is not None:
+                on_close()
+
+        def _reopen() -> None:
+            self._all_female_options(on_close=on_close)
+
+        option_dialog = CommonChooseObjectOptionDialog(
+            CGSStringId.ALL_FEMALE_SIM_OPTIONS,
+            CGSStringId.ALL_FEMALE_SIM_OPTIONS_DESCRIPTION,
+            mod_identity=self.mod_identity,
+            on_close=_on_close
+        )
+
+        @CommonExceptionHandler.catch_exceptions(self.mod_identity)
+        def _on_chosen(_: str, picked_option: bool):
+            if picked_option is None:
+                return
+            if picked_option == -1:
+                self._data_store.set_value_by_key(_, None)
+                _reopen()
+                return
+
+            def _on_ok(_):
+                self._data_store.set_value_by_key(_, picked_option)
+
+                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
+                    _CGSUpdateGenderOptions()._update_gender_options(sim_info)
+                _reopen()
+
+            def _on_cancel(_):
+                _reopen()
+
+            CommonOkCancelDialog(
+                CGSStringId.PLEASE_CONFIRM_NAME,
+                CGSStringId.PLEASE_CONFIRM_DESCRIPTION,
+                ok_text_identifier=CGSStringId.YES_UPDATE_ALL_SIMS,
+                cancel_text_identifier=CGSStringId.NO
+            ).show(
+                on_ok_selected=_on_ok,
+                on_cancel_selected=_on_cancel
+            )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.TOILET_USAGE_STRING_NAME,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING,
+            CGSStringId.TOILET_STANDING,
+            CGSStringId.TOILET_SITTING,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.CLOTHING_PREFERENCE_STRING_NAME,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_PREFER_MENSWEAR,
+            CGSStringId.PREFER_MENSWEAR,
+            CGSStringId.PREFER_WOMENSWEAR,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.BODY_FRAME_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_HAVE_MASCULINE_FRAME,
+            CGSStringId.MASCULINE,
+            CGSStringId.FEMININE,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.REPRODUCTIVE_SETTINGS_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_REPRODUCE,
+            CGSStringId.CAN_REPRODUCE,
+            CGSStringId.CANNOT_REPRODUCE,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.IMPREGNATE_OTHERS_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_IMPREGNATE,
+            CGSStringId.CAN_IMPREGNATE,
+            CGSStringId.CANNOT_IMPREGNATE,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.IMPREGNATED_BY_OTHERS_STRINGS,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_BE_IMPREGNATED,
+            CGSStringId.CAN_BE_IMPREGNATED,
+            CGSStringId.CANNOT_BE_IMPREGNATED,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        option_dialog.show()
+
+    def _add_picker_option(
+        self,
+        option_dialog: CommonChooseObjectOptionDialog,
+        title: int,
+        description: LocalizedString,
+        setting_name: str,
+        on_name: int,
+        off_name: int,
+        on_chosen: Callable[[str, Union[bool, int]], Any],
+        on_close: Callable[[], Any]
+    ):
+        current_val = self._data_store.get_value_by_key(setting_name)
+        selected_string = CGSStringId.DISABLED
+        if current_val is True:
+            selected_string = on_name
+        elif current_val is False:
+            selected_string = off_name
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    title,
+                    description,
+                    title_tokens=(selected_string,)
+                ),
+                on_chosen=lambda *_, **__: self._select_option(
+                    title,
+                    description,
+                    selected_string,
+                    setting_name,
+                    on_name,
+                    off_name,
+                    on_chosen=on_chosen,
+                    on_close=on_close
+                )
+            )
+        )
+
+    def _select_option(
+        self,
+        title: int,
+        description: LocalizedString,
+        current_string: int,
+        setting_name: str,
+        on_name: int,
+        off_name: int,
+        on_chosen: Callable[[str, Union[bool, int]], Any],
+        on_close: Callable[[], Any]=None
+    ):
         def _on_close() -> None:
             if on_close is not None:
                 on_close()
@@ -124,7 +435,7 @@ class CGSGlobalSettingsDialog(HasLog):
         current_val = self._data_store.get_value_by_key(setting_name)
 
         @CommonExceptionHandler.catch_exceptions(self.mod_identity)
-        def _on_chosen(_: str, picked_option: int):
+        def _on_chosen(_: str, picked_option: bool):
             if picked_option is None:
                 _on_close()
                 return
@@ -133,11 +444,11 @@ class CGSGlobalSettingsDialog(HasLog):
         option_dialog.add_option(
             CommonDialogSelectOption(
                 setting_name,
-                disabled,
+                -1,
                 CommonDialogOptionContext(
                     CGSStringId.DISABLED,
                     0,
-                    icon=CommonIconUtils.load_filled_circle_icon() if current_val == disabled else CommonIconUtils.load_unfilled_circle_icon()
+                    icon=CommonIconUtils.load_filled_circle_icon() if current_val is None else CommonIconUtils.load_unfilled_circle_icon()
                 ),
                 on_chosen=_on_chosen
             )
@@ -146,11 +457,11 @@ class CGSGlobalSettingsDialog(HasLog):
         option_dialog.add_option(
             CommonDialogSelectOption(
                 setting_name,
-                on,
+                True,
                 CommonDialogOptionContext(
                     on_name,
                     0,
-                    icon=CommonIconUtils.load_filled_circle_icon() if current_val == on else CommonIconUtils.load_unfilled_circle_icon()
+                    icon=CommonIconUtils.load_filled_circle_icon() if current_val is True else CommonIconUtils.load_unfilled_circle_icon()
                 ),
                 on_chosen=_on_chosen
             )
@@ -159,11 +470,11 @@ class CGSGlobalSettingsDialog(HasLog):
         option_dialog.add_option(
             CommonDialogSelectOption(
                 setting_name,
-                off,
+                False,
                 CommonDialogOptionContext(
                     off_name,
                     0,
-                    icon=CommonIconUtils.load_filled_circle_icon() if current_val == off else CommonIconUtils.load_unfilled_circle_icon()
+                    icon=CommonIconUtils.load_filled_circle_icon() if current_val is False else CommonIconUtils.load_unfilled_circle_icon()
                 ),
                 on_chosen=_on_chosen
             )
