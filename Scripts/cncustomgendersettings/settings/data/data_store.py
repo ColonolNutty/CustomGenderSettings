@@ -6,8 +6,6 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from typing import Any, Dict
-
-from cncustomgendersettings.enums.global_gender_options import CGSGender
 from cncustomgendersettings.settings.settings import CGSGlobalSetting
 from sims4communitylib.persistence.data_stores.common_data_store import CommonDataStore
 
@@ -30,5 +28,21 @@ class CGSGlobalSettingsDataStore(CommonDataStore):
     def _default_data(self) -> Dict[str, Any]:
         return {
             CGSGlobalSetting.VERSION: self._version,
-            CGSGlobalSetting.FORCE_ALL_SIMS_TO_GENDER: CGSGender.DISABLED
+            CGSGlobalSetting.ALL_SIMS_FORCE_AS_MALE: None,
+
+            # Male Global Options
+            CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING: None,
+            CGSGlobalSetting.ALL_MALE_SIMS_PREFER_MENSWEAR: None,
+            CGSGlobalSetting.ALL_MALE_SIMS_HAVE_MASCULINE_FRAME: None,
+            CGSGlobalSetting.ALL_MALE_SIMS_CAN_REPRODUCE: None,
+            CGSGlobalSetting.ALL_MALE_SIMS_CAN_IMPREGNATE: None,
+            CGSGlobalSetting.ALL_MALE_SIMS_CAN_BE_IMPREGNATED: None,
+
+            # Female Global Options
+            CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING: None,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_PREFER_MENSWEAR: None,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_HAVE_MASCULINE_FRAME: None,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_REPRODUCE: None,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_IMPREGNATE: None,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_BE_IMPREGNATED: None,
         }.copy()
