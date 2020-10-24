@@ -63,5 +63,5 @@ class OpenCustomGenderSettingsInteraction(CommonImmediateSuperInteraction):
             return False
         CommonTimeUtils.pause_the_game()
         target_sim_info = CommonSimUtils.get_sim_info(interaction_target)
-        CustomGenderSettingsDialog().open(target_sim_info)
+        CustomGenderSettingsDialog(target_sim_info).open()
         return True
