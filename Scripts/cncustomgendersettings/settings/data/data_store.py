@@ -31,6 +31,7 @@ class CGSGlobalSettingsDataStore(CommonDataStore):
             CGSGlobalSetting.ALL_SIMS_FORCE_AS_MALE: None,
 
             # Male Global Options
+            CGSGlobalSetting.ALL_MALE_SIMS_BREASTS: None,
             CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING: None,
             CGSGlobalSetting.ALL_MALE_SIMS_PREFER_MENSWEAR: None,
             CGSGlobalSetting.ALL_MALE_SIMS_HAVE_MASCULINE_FRAME: None,
@@ -39,6 +40,7 @@ class CGSGlobalSettingsDataStore(CommonDataStore):
             CGSGlobalSetting.ALL_MALE_SIMS_CAN_BE_IMPREGNATED: None,
 
             # Female Global Options
+            CGSGlobalSetting.ALL_FEMALE_SIMS_BREASTS: None,
             CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING: None,
             CGSGlobalSetting.ALL_FEMALE_SIMS_PREFER_MENSWEAR: None,
             CGSGlobalSetting.ALL_FEMALE_SIMS_HAVE_MASCULINE_FRAME: None,
