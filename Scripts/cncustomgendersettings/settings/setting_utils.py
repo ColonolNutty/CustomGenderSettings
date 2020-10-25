@@ -36,6 +36,14 @@ class CGSSettingUtils:
         def __init__(self, setting_utils: 'CGSSettingUtils'):
             self._setting_utils = setting_utils
 
+        def force_breasts_on(self) -> bool:
+            """ Determine if all Male Sims should have breasts. """
+            return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_MALE_SIMS_BREASTS)
+
+        def force_breasts_off(self) -> bool:
+            """ Determine if all Male Sims should have no breasts. """
+            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_MALE_SIMS_BREASTS)
+
         def use_toilet_standing(self) -> bool:
             """ Determine if all Male Sims should use the toilet standing. """
             return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING)
@@ -88,6 +96,14 @@ class CGSSettingUtils:
         """ All Female Options. """
         def __init__(self, setting_utils: 'CGSSettingUtils'):
             self._setting_utils = setting_utils
+
+        def force_breasts_on(self) -> bool:
+            """ Determine if all Female Sims should have breasts. """
+            return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_FEMALE_SIMS_BREASTS)
+
+        def force_breasts_off(self) -> bool:
+            """ Determine if all Female Sims should have no breasts. """
+            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_FEMALE_SIMS_BREASTS)
 
         def use_toilet_standing(self) -> bool:
             """ Determine if all Female Sims should use the toilet standing. """

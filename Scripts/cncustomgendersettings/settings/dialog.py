@@ -10,6 +10,7 @@ from cncustomgendersettings.enums.strings_enum import CGSStringId
 from cncustomgendersettings.global_gender_options_injection import _CGSUpdateGenderOptions
 from cncustomgendersettings.modinfo import ModInfo
 from cncustomgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
+from cncustomgendersettings.persistence.cgs_sim_data import CGSSimData
 from cncustomgendersettings.settings.settings import CGSGlobalSetting
 from protocolbuffers.Localization_pb2 import LocalizedString
 from sims.sim_info import SimInfo
@@ -24,6 +25,8 @@ from sims4communitylib.logging.has_log import HasLog
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
+from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
+from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
 from sims4communitylib.utils.sims.common_sim_utils import CommonSimUtils
 
 
@@ -104,13 +107,13 @@ class CGSGlobalSettingsDialog(HasLog):
         option_dialog.add_option(
             CommonDialogActionOption(
                 CommonDialogOptionContext(
-                    CGSStringId.FORCE_ALL_SIMS_TO_GENDER_NAME,
-                    CGSStringId.FORCE_ALL_SIMS_TO_GENDER_DESCRIPTION,
+                    CGSStringId.CGS_FORCE_ALL_SIMS_TO_GENDER_NAME,
+                    CGSStringId.CGS_FORCE_ALL_SIMS_TO_GENDER_DESCRIPTION,
                     title_tokens=(force_all_selected_string,)
                 ),
                 on_chosen=lambda *_, **__: self._select_option(
-                    CGSStringId.FORCE_ALL_SIMS_TO_GENDER_NAME,
-                    CGSStringId.FORCE_ALL_SIMS_TO_GENDER_DESCRIPTION,
+                    CGSStringId.CGS_FORCE_ALL_SIMS_TO_GENDER_NAME,
+                    CGSStringId.CGS_FORCE_ALL_SIMS_TO_GENDER_DESCRIPTION,
                     force_all_selected_string,
                     CGSGlobalSetting.ALL_SIMS_FORCE_AS_MALE,
                     CGSStringId.MALE,
@@ -118,6 +121,41 @@ class CGSGlobalSettingsDialog(HasLog):
                     on_chosen=_on_force_all_chosen,
                     on_close=_reopen
                 )
+            )
+        )
+
+        def _reset_all_to_original_gender_chosen():
+            for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
+                CGSSimData(sim_info).reset_to_original_gender_and_gender_options()
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_NAME,
+                    CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_right_icon()
+                ),
+                on_chosen=_reset_all_to_original_gender_chosen
+            )
+        )
+
+        def _set_all_to_vanilla_gender_chosen():
+            for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
+                if CommonGenderUtils.is_male(self._sim_info):
+                    CommonSimGenderOptionUtils.update_gender_options_to_vanilla_male(sim_info)
+                else:
+                    CommonSimGenderOptionUtils.update_gender_options_to_vanilla_female(sim_info)
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_SET_TO_VANILLA_GENDER_OPTIONS_NAME,
+                    CGSStringId.CGS_SET_TO_VANILLA_GENDER_OPTIONS_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_right_icon()
+                ),
+                on_chosen=_set_all_to_vanilla_gender_chosen
             )
         )
 
@@ -204,6 +242,17 @@ class CGSGlobalSettingsDialog(HasLog):
 
         self._add_picker_option(
             option_dialog,
+            CGSStringId.BREASTS_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_BREASTS,
+            CGSStringId.ON,
+            CGSStringId.OFF,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
             CGSStringId.CLOTHING_PREFERENCE_STRING_NAME,
             CGSStringId.GENDER_OPTION_DESCRIPTION,
             CGSGlobalSetting.ALL_MALE_SIMS_PREFER_MENSWEAR,
@@ -283,14 +332,14 @@ class CGSGlobalSettingsDialog(HasLog):
                 _reopen()
                 return
 
-            def _on_ok(_):
+            def _on_ok(_d):
                 self._data_store.set_value_by_key(_, picked_option)
 
                 for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
                     _CGSUpdateGenderOptions()._update_gender_options(sim_info)
                 _reopen()
 
-            def _on_cancel(_):
+            def _on_cancel(_d):
                 _reopen()
 
             CommonOkCancelDialog(
@@ -310,6 +359,17 @@ class CGSGlobalSettingsDialog(HasLog):
             CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING,
             CGSStringId.TOILET_STANDING,
             CGSStringId.TOILET_SITTING,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.BREASTS_STRING,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_BREASTS,
+            CGSStringId.ON,
+            CGSStringId.OFF,
             on_chosen=_on_chosen,
             on_close=on_close
         )

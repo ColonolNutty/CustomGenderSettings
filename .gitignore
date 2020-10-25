@@ -15,7 +15,6 @@ __pycache__
 */*.pyo
 Utilities/*.pyc
 .idea/dictionaries
-tunings
 **/*.7z
 **/*.zip
 **/Release/*.7z

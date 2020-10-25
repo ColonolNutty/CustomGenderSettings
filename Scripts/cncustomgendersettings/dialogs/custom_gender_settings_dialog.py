@@ -7,6 +7,8 @@ Copyright (c) COLONOLNUTTY
 """
 from typing import Callable, Any
 
+from cncustomgendersettings.commonlib.utils.common_sim_gender_option_utils import CGSCommonSimGenderOptionUtils
+from cncustomgendersettings.persistence.cgs_sim_data import CGSSimData
 from cncustomgendersettings.settings.dialog import CGSGlobalSettingsDialog
 from sims.sim_info import SimInfo
 from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
@@ -22,7 +24,6 @@ from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.enums.traits_enum import CommonTraitId
 from sims4communitylib.logging.has_log import HasLog
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
-from sims4communitylib.utils.cas.common_outfit_utils import CommonOutfitUtils
 from sims4communitylib.utils.common_function_utils import CommonFunctionUtils
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
 from sims4communitylib.utils.localization.common_localization_utils import CommonLocalizationUtils
@@ -92,6 +93,59 @@ class CustomGenderSettingsDialog(HasLog):
             )
         )
 
+        def _reset_to_original_gender_chosen():
+            CGSSimData(self._sim_info).reset_to_original_gender_and_gender_options()
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_NAME,
+                    CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_right_icon()
+                ),
+                on_chosen=_reset_to_original_gender_chosen
+            )
+        )
+
+        def _set_to_vanilla_gender_chosen():
+            if CommonGenderUtils.is_male(self._sim_info):
+                CommonSimGenderOptionUtils.update_gender_options_to_vanilla_male(self._sim_info)
+            else:
+                CommonSimGenderOptionUtils.update_gender_options_to_vanilla_female(self._sim_info)
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_SET_TO_VANILLA_GENDER_OPTIONS_NAME,
+                    CGSStringId.CGS_SET_TO_VANILLA_GENDER_OPTIONS_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_right_icon()
+                ),
+                on_chosen=_set_to_vanilla_gender_chosen
+            )
+        )
+
+        def _on_gender_chosen():
+            CommonGenderUtils.swap_gender(self._sim_info)
+            _reopen()
+
+        current_gender_string = CGSStringId.MALE
+        if CommonGenderUtils.is_female(self._sim_info):
+            current_gender_string = CGSStringId.FEMALE
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_SWAP_GENDER_NAME,
+                    CGSStringId.CGS_SWAP_GENDER_DESCRIPTION,
+                    title_tokens=(current_gender_string,),
+                    icon=CommonIconUtils.load_arrow_right_icon()
+                ),
+                on_chosen=_on_gender_chosen
+            )
+        )
+
         def _on_physical_frame_chosen():
             CommonSimGenderOptionUtils.update_body_frame(self._sim_info, not CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info))
             _reopen()
@@ -134,15 +188,7 @@ class CustomGenderSettingsDialog(HasLog):
             def _on_acknowledged(_):
                 _reopen()
 
-            CommonTraitUtils.remove_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_OFF)
-            CommonTraitUtils.remove_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_ON)
-            if not has_breasts:
-                if CommonGenderUtils.is_female(self._sim_info):
-                    CommonTraitUtils.add_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_OFF)
-            else:
-                if CommonGenderUtils.is_male(self._sim_info):
-                    CommonTraitUtils.add_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_ON)
-            CommonOutfitUtils.update_outfits(self._sim_info)
+            CGSCommonSimGenderOptionUtils.update_has_breasts(self._sim_info, has_breasts)
             CommonOkDialog(
                 CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_NAME,
                 CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_DESCRIPTION

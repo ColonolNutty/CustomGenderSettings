@@ -5,6 +5,7 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
+from cncustomgendersettings.commonlib.utils.common_sim_gender_option_utils import CGSCommonSimGenderOptionUtils
 from cncustomgendersettings.modinfo import ModInfo
 from cncustomgendersettings.persistence.cgs_sim_data import CGSSimData
 from cncustomgendersettings.settings.setting_utils import CGSSettingUtils
@@ -62,6 +63,12 @@ class _CGSUpdateGenderOptions:
                     CommonSimGenderOptionUtils.update_can_be_impregnated(sim_info, True)
                 if self._setting_utils.all_male_options.cannot_be_impregnated() and not CommonSimGenderOptionUtils.can_not_be_impregnated(sim_info):
                     CommonSimGenderOptionUtils.update_can_be_impregnated(sim_info, False)
+                if self._setting_utils.all_male_options.force_breasts_on() and not CGSCommonSimGenderOptionUtils.has_breasts(sim_info):
+                    CGSCommonSimGenderOptionUtils.update_has_breasts(sim_info, True)
+                    update_outfits = True
+                if self._setting_utils.all_male_options.force_breasts_off() and CGSCommonSimGenderOptionUtils.has_breasts(sim_info):
+                    CGSCommonSimGenderOptionUtils.update_has_breasts(sim_info, False)
+                    update_outfits = True
         elif CommonGenderUtils.is_female(sim_info):
             if CommonSpeciesUtils.is_pet(sim_info):
                 if self._setting_utils.all_female_options.can_reproduce() and not CommonSimGenderOptionUtils.can_reproduce(sim_info):
@@ -91,6 +98,12 @@ class _CGSUpdateGenderOptions:
                     CommonSimGenderOptionUtils.update_can_be_impregnated(sim_info, True)
                 if self._setting_utils.all_female_options.cannot_be_impregnated() and not CommonSimGenderOptionUtils.can_not_be_impregnated(sim_info):
                     CommonSimGenderOptionUtils.update_can_be_impregnated(sim_info, False)
+                if self._setting_utils.all_female_options.force_breasts_on() and not CGSCommonSimGenderOptionUtils.has_breasts(sim_info):
+                    CGSCommonSimGenderOptionUtils.update_has_breasts(sim_info, True)
+                    update_outfits = True
+                if self._setting_utils.all_female_options.force_breasts_off() and CGSCommonSimGenderOptionUtils.has_breasts(sim_info):
+                    CGSCommonSimGenderOptionUtils.update_has_breasts(sim_info, False)
+                    update_outfits = True
         if update_outfits:
             CommonOutfitUtils.update_outfits(sim_info)
 
