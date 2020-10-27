@@ -29,6 +29,8 @@ from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
 from sims4communitylib.utils.sims.common_sim_utils import CommonSimUtils
 
+debug = False
+
 
 class CGSGlobalSettingsDialog(HasLog):
     """ Settings. """
@@ -124,25 +126,26 @@ class CGSGlobalSettingsDialog(HasLog):
             )
         )
 
-        def _reset_all_to_original_gender_chosen():
-            for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
-                CGSSimData(sim_info).reset_to_original_gender_and_gender_options()
-            _reopen()
+        if debug:
+            def _reset_all_to_original_gender_chosen():
+                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
+                    CGSSimData(sim_info).reset_to_original_gender_and_gender_options()
+                _reopen()
 
-        option_dialog.add_option(
-            CommonDialogActionOption(
-                CommonDialogOptionContext(
-                    CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_NAME,
-                    CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_DESCRIPTION,
-                    icon=CommonIconUtils.load_arrow_right_icon()
-                ),
-                on_chosen=_reset_all_to_original_gender_chosen
+            option_dialog.add_option(
+                CommonDialogActionOption(
+                    CommonDialogOptionContext(
+                        CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_NAME,
+                        CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_DESCRIPTION,
+                        icon=CommonIconUtils.load_arrow_right_icon()
+                    ),
+                    on_chosen=_reset_all_to_original_gender_chosen
+                )
             )
-        )
 
-        def _set_all_to_vanilla_gender_chosen():
+        def _set_all_to_vanilla_gender_options_chosen():
             for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
-                if CommonGenderUtils.is_male(self._sim_info):
+                if CommonGenderUtils.is_male(sim_info):
                     CommonSimGenderOptionUtils.update_gender_options_to_vanilla_male(sim_info)
                 else:
                     CommonSimGenderOptionUtils.update_gender_options_to_vanilla_female(sim_info)
@@ -151,11 +154,11 @@ class CGSGlobalSettingsDialog(HasLog):
         option_dialog.add_option(
             CommonDialogActionOption(
                 CommonDialogOptionContext(
-                    CGSStringId.CGS_SET_TO_VANILLA_GENDER_OPTIONS_NAME,
-                    CGSStringId.CGS_SET_TO_VANILLA_GENDER_OPTIONS_DESCRIPTION,
+                    CGSStringId.SET_ALL_SIMS_TO_VANILLA_GENDER_OPTIONS_NAME,
+                    CGSStringId.SET_ALL_SIMS_TO_VANILLA_GENDER_OPTIONS_DESCRIPTION,
                     icon=CommonIconUtils.load_arrow_right_icon()
                 ),
-                on_chosen=_set_all_to_vanilla_gender_chosen
+                on_chosen=_set_all_to_vanilla_gender_options_chosen
             )
         )
 
