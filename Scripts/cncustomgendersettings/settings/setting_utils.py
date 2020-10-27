@@ -9,7 +9,7 @@ from typing import Any
 from cncustomgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
 from cncustomgendersettings.settings.settings import CGSGlobalSetting
 from sims.sim_info import SimInfo
-from sims4communitylib.utils.sims.common_age_utils import CommonAgeUtils
+from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 
 
 class CGSSettingUtils:
@@ -21,7 +21,7 @@ class CGSSettingUtils:
 
     def is_enabled_for_interactions(self, sim_info: SimInfo) -> bool:
         """ Determine if a Sim is enabled for Custom Gender Setting interactions. """
-        return CommonAgeUtils.is_teen_adult_or_elder(sim_info)
+        return CommonSpeciesUtils.is_human(sim_info) or CommonSpeciesUtils.is_pet(sim_info)
 
     def force_all_sims_to_male(self) -> bool:
         """ Determine if all Sims should be forced to Male. """
