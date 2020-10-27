@@ -7,7 +7,6 @@ Copyright (c) COLONOLNUTTY
 """
 from pprint import pformat
 
-from cncustomgendersettings.commonlib.utils.common_sim_gender_option_utils import CGSCommonSimGenderOptionUtils
 from cncustomgendersettings.modinfo import ModInfo
 from sims.sim_info_types import Gender
 from sims4.commands import Command, CommandType, CheatOutput
@@ -121,7 +120,7 @@ class CGSSimData(CommonPersistedSimDataStorage):
         # noinspection PyAttributeOutsideInit
         self.original_can_be_impregnated = CommonSimGenderOptionUtils.can_be_impregnated(self.sim_info) if self.original_can_be_impregnated is None or force else self.original_can_be_impregnated
         # noinspection PyAttributeOutsideInit
-        self.original_has_breasts = CGSCommonSimGenderOptionUtils.has_breasts(self.sim_info) if self.original_has_breasts is None or force else self.original_has_breasts
+        self.original_has_breasts = CommonSimGenderOptionUtils.has_breasts(self.sim_info) if self.original_has_breasts is None or force else self.original_has_breasts
 
     def reset_to_original_gender_and_gender_options(self) -> None:
         """ Update the Sim to their saved original gender options. """
@@ -134,7 +133,7 @@ class CGSSimData(CommonPersistedSimDataStorage):
             CommonSimGenderOptionUtils.update_body_frame(self.sim_info, self.original_has_masculine_frame)
             CommonSimGenderOptionUtils.update_can_impregnate(self.sim_info, self.original_can_impregnate)
             CommonSimGenderOptionUtils.update_can_be_impregnated(self.sim_info, self.original_can_be_impregnated)
-            CGSCommonSimGenderOptionUtils.update_has_breasts(self.sim_info, self.original_has_breasts)
+            CommonSimGenderOptionUtils.update_has_breasts(self.sim_info, self.original_has_breasts)
 
 
 @Command('cgs.print_sim_data', command_type=CommandType.Live)

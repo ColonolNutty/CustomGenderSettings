@@ -7,7 +7,6 @@ Copyright (c) COLONOLNUTTY
 """
 from typing import Callable, Any
 
-from cncustomgendersettings.commonlib.utils.common_sim_gender_option_utils import CGSCommonSimGenderOptionUtils
 from cncustomgendersettings.persistence.cgs_sim_data import CGSSimData
 from cncustomgendersettings.settings.dialog import CGSGlobalSettingsDialog
 from sims.sim_info import SimInfo
@@ -32,6 +31,8 @@ from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
+
+debug = False
 
 
 class CustomGenderSettingsDialog(HasLog):
@@ -69,10 +70,6 @@ class CustomGenderSettingsDialog(HasLog):
             if on_close is not None:
                 on_close()
 
-        current_body_frame = CommonStringId.FEMININE
-        if CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info):
-            current_body_frame = CommonStringId.MASCULINE
-
         def _reopen():
             self._settings_human(on_close=on_close)
 
@@ -93,20 +90,21 @@ class CustomGenderSettingsDialog(HasLog):
             )
         )
 
-        def _reset_to_original_gender_chosen():
-            CGSSimData(self._sim_info).reset_to_original_gender_and_gender_options()
-            _reopen()
+        if debug:
+            def _reset_to_original_gender_chosen():
+                CGSSimData(self._sim_info).reset_to_original_gender_and_gender_options()
+                _reopen()
 
-        option_dialog.add_option(
-            CommonDialogActionOption(
-                CommonDialogOptionContext(
-                    CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_NAME,
-                    CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_DESCRIPTION,
-                    icon=CommonIconUtils.load_arrow_right_icon()
-                ),
-                on_chosen=_reset_to_original_gender_chosen
+            option_dialog.add_option(
+                CommonDialogActionOption(
+                    CommonDialogOptionContext(
+                        CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_NAME,
+                        CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_DESCRIPTION,
+                        icon=CommonIconUtils.load_arrow_right_icon()
+                    ),
+                    on_chosen=_reset_to_original_gender_chosen
+                )
             )
-        )
 
         def _set_to_vanilla_gender_chosen():
             if CommonGenderUtils.is_male(self._sim_info):
@@ -128,6 +126,7 @@ class CustomGenderSettingsDialog(HasLog):
 
         def _on_gender_chosen():
             CommonGenderUtils.swap_gender(self._sim_info)
+            CGSSimData(self._sim_info).original_gender = CommonGenderUtils.get_gender(self._sim_info)
             _reopen()
 
         current_gender_string = CGSStringId.MALE
@@ -147,8 +146,14 @@ class CustomGenderSettingsDialog(HasLog):
         )
 
         def _on_physical_frame_chosen():
-            CommonSimGenderOptionUtils.update_body_frame(self._sim_info, not CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info))
+            value = not CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info)
+            CommonSimGenderOptionUtils.update_body_frame(self._sim_info, value)
+            CGSSimData(self._sim_info).original_has_masculine_frame = value
             _reopen()
+
+        current_body_frame = CommonStringId.FEMININE
+        if CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info):
+            current_body_frame = CommonStringId.MASCULINE
 
         option_dialog.add_option(
             CommonDialogActionOption(
@@ -167,7 +172,9 @@ class CustomGenderSettingsDialog(HasLog):
             current_clothing = CommonStringId.MASCULINE
 
         def _on_clothing_preference_chosen():
-            CommonSimGenderOptionUtils.update_clothing_preference(self._sim_info, not CommonSimGenderOptionUtils.prefers_menswear(self._sim_info))
+            value = not CommonSimGenderOptionUtils.prefers_menswear(self._sim_info)
+            CommonSimGenderOptionUtils.update_clothing_preference(self._sim_info, value)
+            CGSSimData(self._sim_info).original_prefers_menswear = value
             _reopen()
 
         option_dialog.add_option(
@@ -188,7 +195,8 @@ class CustomGenderSettingsDialog(HasLog):
             def _on_acknowledged(_):
                 _reopen()
 
-            CGSCommonSimGenderOptionUtils.update_has_breasts(self._sim_info, has_breasts)
+            CommonSimGenderOptionUtils.update_has_breasts(self._sim_info, has_breasts)
+            CGSSimData(self._sim_info).original_has_breasts = has_breasts
             CommonOkDialog(
                 CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_NAME,
                 CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_DESCRIPTION
@@ -230,7 +238,9 @@ class CustomGenderSettingsDialog(HasLog):
         text = CGSStringId.CGS_TOGGLE_CAN_USE_TOILET_STANDING_DESCRIPTION
 
         def _on_toilet_usage_chosen():
-            CommonSimGenderOptionUtils.update_toilet_usage(self._sim_info, not CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info))
+            value = not CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info)
+            CommonSimGenderOptionUtils.update_toilet_usage(self._sim_info, value)
+            CGSSimData(self._sim_info).original_uses_toilet_standing = value
             _reopen()
 
         option_dialog.add_option(
@@ -258,7 +268,9 @@ class CustomGenderSettingsDialog(HasLog):
             if picked_option is None:
                 _on_close()
                 return
-            CommonSimGenderOptionUtils.update_can_reproduce(self._sim_info, not CommonSimGenderOptionUtils.can_reproduce(self._sim_info))
+            value = not CommonSimGenderOptionUtils.can_reproduce(self._sim_info)
+            CommonSimGenderOptionUtils.update_can_reproduce(self._sim_info, value)
+            CGSSimData(self._sim_info).original_can_reproduce = value
             _reopen()
 
         option_dialog = CommonChooseObjectOptionDialog(
@@ -267,6 +279,22 @@ class CustomGenderSettingsDialog(HasLog):
             mod_identity=self.mod_identity,
             on_close=_on_close
         )
+
+        if debug:
+            def _reset_to_original_gender_chosen():
+                CGSSimData(self._sim_info).reset_to_original_gender_and_gender_options()
+                _reopen()
+
+            option_dialog.add_option(
+                CommonDialogActionOption(
+                    CommonDialogOptionContext(
+                        CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_NAME,
+                        CGSStringId.CGS_RESET_TO_ORIGINAL_GENDER_DESCRIPTION,
+                        icon=CommonIconUtils.load_arrow_right_icon()
+                    ),
+                    on_chosen=_reset_to_original_gender_chosen
+                )
+            )
 
         current_selected = CGSStringId.NATURAL
         can_reproduce = CommonSimGenderOptionUtils.can_reproduce(self._sim_info)
@@ -306,7 +334,9 @@ class CustomGenderSettingsDialog(HasLog):
 
         def _can_impregnate_chosen(option_identifier: str, can_get_others_pregnant: bool):
             self.log.format(option_identifier=option_identifier, can_get_others_pregnant=can_get_others_pregnant)
-            CommonSimGenderOptionUtils.update_can_impregnate(self._sim_info, not CommonSimGenderOptionUtils.can_impregnate(self._sim_info))
+            value = not CommonSimGenderOptionUtils.can_impregnate(self._sim_info)
+            CommonSimGenderOptionUtils.update_can_impregnate(self._sim_info, value)
+            CGSSimData(self._sim_info).original_can_impregnate = value
             _reopen()
 
         option_dialog.add_option(
@@ -323,7 +353,9 @@ class CustomGenderSettingsDialog(HasLog):
 
         def _can_be_impregnated_chosen(option_identifier: str, can_get_pregnant: bool):
             self.log.format(option_identifier=option_identifier, can_get_pregnant=can_get_pregnant)
-            CommonSimGenderOptionUtils.update_can_be_impregnated(self._sim_info, not CommonSimGenderOptionUtils.can_be_impregnated(self._sim_info))
+            value = not CommonSimGenderOptionUtils.can_be_impregnated(self._sim_info)
+            CommonSimGenderOptionUtils.update_can_be_impregnated(self._sim_info, value)
+            CGSSimData(self._sim_info).original_can_be_impregnated = value
             _reopen()
 
         option_dialog.add_option(
