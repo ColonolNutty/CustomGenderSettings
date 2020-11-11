@@ -61,7 +61,8 @@ class CustomGenderSettingsDialog(HasLog):
 
             if CommonSpeciesUtils.is_pet(self._sim_info):
                 self._settings_pet(on_close=_on_close)
-            self._settings_human(on_close=_on_close)
+            else:
+                self._settings_human(on_close=_on_close)
         except Exception as ex:
             self.log.error('Error occurred while opening custom gender settings dialog.', exception=ex)
 
