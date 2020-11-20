@@ -28,10 +28,10 @@ class _CGSUpdateGenderOptions:
         CGSSimData(sim_info).update_original_gender_options()
         update_outfits = False
         if self._setting_utils.force_all_sims_to_male() and not CommonGenderUtils.is_male(sim_info):
-            CommonGenderUtils.swap_gender(sim_info)
+            CommonGenderUtils.swap_gender(sim_info, update_gender_options=False)
             update_outfits = True
         elif self._setting_utils.force_all_sims_to_female() and not CommonGenderUtils.is_female(sim_info):
-            CommonGenderUtils.swap_gender(sim_info)
+            CommonGenderUtils.swap_gender(sim_info, update_gender_options=False)
             update_outfits = True
         if CommonGenderUtils.is_male(sim_info):
             if CommonSpeciesUtils.is_pet(sim_info):

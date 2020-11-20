@@ -126,7 +126,7 @@ class CustomGenderSettingsDialog(HasLog):
         )
 
         def _on_gender_chosen():
-            CommonGenderUtils.swap_gender(self._sim_info)
+            CommonGenderUtils.swap_gender(self._sim_info, update_gender_options=False)
             CGSSimData(self._sim_info).original_gender = CommonGenderUtils.get_gender(self._sim_info)
             _reopen()
 
