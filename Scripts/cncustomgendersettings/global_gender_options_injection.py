@@ -6,7 +6,6 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from cncustomgendersettings.modinfo import ModInfo
-from cncustomgendersettings.persistence.cgs_sim_data import CGSSimData
 from cncustomgendersettings.settings.setting_utils import CGSSettingUtils
 from sims.occult.occult_enums import OccultType
 from sims.outfits.outfit_utils import get_maximum_outfits_for_category
@@ -25,7 +24,6 @@ class _CGSUpdateGenderOptions:
         self._setting_utils = CGSSettingUtils()
 
     def _update_gender_options(self, sim_info: SimInfo):
-        CGSSimData(sim_info).update_original_gender_options()
         update_outfits = False
         if self._setting_utils.force_all_sims_to_male() and not CommonGenderUtils.is_male(sim_info):
             CommonGenderUtils.swap_gender(sim_info, update_gender_options=False)

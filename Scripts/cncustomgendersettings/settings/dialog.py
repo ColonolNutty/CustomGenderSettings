@@ -10,7 +10,6 @@ from cncustomgendersettings.enums.strings_enum import CGSStringId
 from cncustomgendersettings.global_gender_options_injection import _CGSUpdateGenderOptions
 from cncustomgendersettings.modinfo import ModInfo
 from cncustomgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
-from cncustomgendersettings.persistence.cgs_sim_data import CGSSimData
 from cncustomgendersettings.settings.settings import CGSGlobalSetting
 from protocolbuffers.Localization_pb2 import LocalizedString
 from sims.sim_info import SimInfo
@@ -125,23 +124,6 @@ class CGSGlobalSettingsDialog(HasLog):
                 )
             )
         )
-
-        if debug:
-            def _reset_all_to_original_gender_chosen():
-                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
-                    CGSSimData(sim_info).reset_to_original_gender_and_gender_options()
-                _reopen()
-
-            option_dialog.add_option(
-                CommonDialogActionOption(
-                    CommonDialogOptionContext(
-                        CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_NAME,
-                        CGSStringId.CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_DESCRIPTION,
-                        icon=CommonIconUtils.load_arrow_right_icon()
-                    ),
-                    on_chosen=_reset_all_to_original_gender_chosen
-                )
-            )
 
         def _set_all_to_vanilla_gender_options_chosen():
             for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
