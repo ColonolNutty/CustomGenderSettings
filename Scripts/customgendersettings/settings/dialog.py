@@ -6,11 +6,11 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from typing import Any, Callable, Union
-from cncustomgendersettings.enums.strings_enum import CGSStringId
-from cncustomgendersettings.global_gender_options_injection import _CGSUpdateGenderOptions
-from cncustomgendersettings.modinfo import ModInfo
-from cncustomgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
-from cncustomgendersettings.settings.settings import CGSGlobalSetting
+from customgendersettings.enums.strings_enum import CGSStringId
+from customgendersettings.global_gender_options_injection import _CGSUpdateGenderOptions
+from customgendersettings.modinfo import ModInfo
+from customgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
+from customgendersettings.settings.settings import CGSGlobalSetting
 from protocolbuffers.Localization_pb2 import LocalizedString
 from sims.sim_info import SimInfo
 from sims4communitylib.dialogs.ok_cancel_dialog import CommonOkCancelDialog
@@ -216,11 +216,22 @@ class CGSGlobalSettingsDialog(HasLog):
 
         self._add_picker_option(
             option_dialog,
-            CGSStringId.TOILET_USAGE_STRING_NAME,
+            CGSStringId.CGS_CAN_USE_TOILET_STANDING_NAME,
             CGSStringId.GENDER_OPTION_DESCRIPTION,
             CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING,
-            CGSStringId.TOILET_STANDING,
-            CGSStringId.TOILET_SITTING,
+            CGSStringId.YES,
+            CGSStringId.NO,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_SITTING,
+            CGSStringId.YES,
+            CGSStringId.NO,
             on_chosen=_on_chosen,
             on_close=on_close
         )
@@ -339,11 +350,22 @@ class CGSGlobalSettingsDialog(HasLog):
 
         self._add_picker_option(
             option_dialog,
-            CGSStringId.TOILET_USAGE_STRING_NAME,
+            CGSStringId.CGS_CAN_USE_TOILET_STANDING_NAME,
             CGSStringId.GENDER_OPTION_DESCRIPTION,
             CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING,
-            CGSStringId.TOILET_STANDING,
-            CGSStringId.TOILET_SITTING,
+            CGSStringId.YES,
+            CGSStringId.NO,
+            on_chosen=_on_chosen,
+            on_close=on_close
+        )
+
+        self._add_picker_option(
+            option_dialog,
+            CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
+            CGSStringId.GENDER_OPTION_DESCRIPTION,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_SITTING,
+            CGSStringId.YES,
+            CGSStringId.NO,
             on_chosen=_on_chosen,
             on_close=on_close
         )

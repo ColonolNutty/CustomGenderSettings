@@ -7,11 +7,11 @@ Copyright (c) COLONOLNUTTY
 """
 # noinspection PyBroadException
 try:
-    from cncustomgendersettings.dialogs.custom_gender_settings_dialog import CustomGenderSettingsDialog
-    from cncustomgendersettings.enums.strings_enum import CGSStringId
-    from cncustomgendersettings.interactions.open_custom_gender_settings import OpenCustomGenderSettingsInteraction
-    from cncustomgendersettings.modinfo import ModInfo
-    from cncustomgendersettings.settings.setting_utils import CGSSettingUtils
+    from customgendersettings.dialogs.custom_gender_settings_dialog import CustomGenderSettingsDialog
+    from customgendersettings.enums.strings_enum import CGSStringId
+    from customgendersettings.interactions.open_custom_gender_settings import OpenCustomGenderSettingsInteraction
+    from customgendersettings.modinfo import ModInfo
+    from customgendersettings.settings.setting_utils import CGSSettingUtils
     from sims4communitylib.enums.strings_enum import CommonStringId
     from typing import Callable, Any, Union
     from sims.sim_info import SimInfo

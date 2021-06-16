@@ -6,7 +6,8 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from typing import Callable, Any
-from cncustomgendersettings.settings.dialog import CGSGlobalSettingsDialog
+from customgendersettings.settings.dialog import CGSGlobalSettingsDialog
+from customgendersettings.utils.common_sim_gender_option_utils import CGSCommonSimGenderOptionUtils
 from sims.sim_info import SimInfo
 from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
@@ -15,16 +16,14 @@ from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_acti
     CommonDialogActionOption
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_toggle_option import \
     CommonDialogToggleOption
-from cncustomgendersettings.modinfo import ModInfo
-from cncustomgendersettings.enums.strings_enum import CGSStringId
+from customgendersettings.modinfo import ModInfo
+from customgendersettings.enums.strings_enum import CGSStringId
 from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.enums.traits_enum import CommonTraitId
 from sims4communitylib.logging.has_log import HasLog
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.utils.common_function_utils import CommonFunctionUtils
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
-from sims4communitylib.utils.localization.common_localization_utils import CommonLocalizationUtils
-from sims4communitylib.utils.localization.common_localized_string_colors import CommonLocalizedStringColor
 from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
@@ -208,27 +207,35 @@ class CustomGenderSettingsDialog(HasLog):
             )
         )
 
-        title = CGSStringId.CGS_TOGGLE_CAN_USE_TOILET_STANDING_NAME
-        if CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info):
-            title = CommonLocalizationUtils.create_localized_string(title, text_color=CommonLocalizedStringColor.GREEN)
-            icon = CommonIconUtils.load_checked_square_icon()
-        else:
-            icon = CommonIconUtils.load_unchecked_square_icon()
-        text = CGSStringId.CGS_TOGGLE_CAN_USE_TOILET_STANDING_DESCRIPTION
-
-        def _on_toilet_usage_chosen():
-            value = not CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info)
-            CommonSimGenderOptionUtils.update_toilet_usage(self._sim_info, value)
+        def _on_can_use_toilet_standing_chosen(_: str, can_use_toilet_standing: bool):
+            CGSCommonSimGenderOptionUtils.set_can_use_toilet_standing(self._sim_info, can_use_toilet_standing)
             _reopen()
 
         option_dialog.add_option(
-            CommonDialogActionOption(
+            CommonDialogToggleOption(
+                'CanUseToiletStanding',
+                CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info),
                 CommonDialogOptionContext(
-                    title,
-                    text,
-                    icon=icon
+                    CGSStringId.CGS_CAN_USE_TOILET_STANDING_NAME,
+                    CGSStringId.CGS_CAN_USE_TOILET_STANDING_DESCRIPTION
                 ),
-                on_chosen=_on_toilet_usage_chosen
+                on_chosen=_on_can_use_toilet_standing_chosen
+            )
+        )
+
+        def _on_can_use_toilet_sitting_chosen(_: str, can_use_toilet_sitting: bool):
+            CGSCommonSimGenderOptionUtils.set_can_use_toilet_sitting(self._sim_info, can_use_toilet_sitting)
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'CanUseToiletSitting',
+                CommonSimGenderOptionUtils.uses_toilet_sitting(self._sim_info),
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
+                    CGSStringId.CGS_CAN_USE_TOILET_SITTING_DESCRIPTION
+                ),
+                on_chosen=_on_can_use_toilet_sitting_chosen
             )
         )
 

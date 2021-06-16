@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<I c="OpenCustomGenderSettingsInteraction" i="interaction" m="cncustomgendersettings.interactions.open_custom_gender_settings" n="CGS_Open_Custom_Gender_Settings" s="10392098478334563125">
+<I c="OpenCustomGenderSettingsInteraction" i="interaction" m="customgendersettings.interactions.open_custom_gender_settings" n="CGS_Open_Custom_Gender_Settings" s="10392098478334563125">
   <V t="enabled" n="_saveable" />
   <T n="allow_autonomous">False</T>
   <V t="tunable_focus" n="basic_focus" />

@@ -10,7 +10,7 @@ from objects.script_object import ScriptObject
 from sims4communitylib.services.interactions.interaction_registration_service import CommonInteractionRegistry, \
     CommonInteractionType, CommonScriptObjectInteractionHandler
 from sims4communitylib.utils.common_type_utils import CommonTypeUtils
-from cncustomgendersettings.enums.interactions_enum import CGSInteractionId
+from customgendersettings.enums.interactions_enum import CGSInteractionId
 
 
 @CommonInteractionRegistry.register_interaction_handler(CommonInteractionType.ON_SCRIPT_OBJECT_LOAD)

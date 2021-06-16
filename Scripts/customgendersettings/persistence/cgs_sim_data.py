@@ -7,7 +7,7 @@ Copyright (c) COLONOLNUTTY
 """
 from pprint import pformat
 
-from cncustomgendersettings.modinfo import ModInfo
+from customgendersettings.modinfo import ModInfo
 from sims4.commands import Command, CommandType, CheatOutput
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.persistence.common_persisted_sim_data_storage import CommonPersistedSimDataStorage

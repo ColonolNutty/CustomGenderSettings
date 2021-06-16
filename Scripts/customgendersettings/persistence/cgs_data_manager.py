@@ -7,7 +7,7 @@ Copyright (c) COLONOLNUTTY
 """
 from typing import Tuple
 
-from cncustomgendersettings.modinfo import ModInfo
+from customgendersettings.modinfo import ModInfo
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.persistence.data_management.common_data_manager import CommonDataManager
 from sims4communitylib.persistence.data_management.common_data_manager_registry import CommonDataManagerRegistry

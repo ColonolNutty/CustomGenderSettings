@@ -6,8 +6,8 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from typing import Any
-from cncustomgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
-from cncustomgendersettings.settings.settings import CGSGlobalSetting
+from customgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
+from customgendersettings.settings.settings import CGSGlobalSetting
 from sims.sim_info import SimInfo
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 
@@ -48,9 +48,17 @@ class CGSSettingUtils:
             """ Determine if all Male Sims should use the toilet standing. """
             return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING)
 
+        def dont_use_toilet_standing(self) -> bool:
+            """ Determine if all Male Sims should not use the toilet standing. """
+            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING)
+
         def use_toilet_sitting(self) -> bool:
             """ Determine if all Male Sims should use the toilet sitting. """
-            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING)
+            return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_SITTING)
+
+        def dont_use_toilet_sitting(self) -> bool:
+            """ Determine if all Male Sims should not use the toilet sitting. """
+            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_SITTING)
 
         def prefer_menswear(self) -> bool:
             """ Determine if all Male Sims should prefer menswear. """
@@ -109,9 +117,17 @@ class CGSSettingUtils:
             """ Determine if all Female Sims should use the toilet standing. """
             return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING)
 
+        def dont_use_toilet_standing(self) -> bool:
+            """ Determine if all Female Sims should not use the toilet standing. """
+            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING)
+
         def use_toilet_sitting(self) -> bool:
             """ Determine if all Female Sims should use the toilet sitting. """
-            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING)
+            return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_SITTING)
+
+        def dont_use_toilet_sitting(self) -> bool:
+            """ Determine if all Female Sims should not use the toilet sitting. """
+            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_SITTING)
 
         def prefer_menswear(self) -> bool:
             """ Determine if all Female Sims should prefer menswear. """

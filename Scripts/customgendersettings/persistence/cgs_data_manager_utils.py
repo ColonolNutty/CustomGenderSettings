@@ -8,9 +8,9 @@ Copyright (c) COLONOLNUTTY
 
 from typing import Type, Union, Dict, Any
 
-from cncustomgendersettings.modinfo import ModInfo
-from cncustomgendersettings.persistence.cgs_data_manager import CGSDataManager
-from cncustomgendersettings.settings.data.data_store import CGSGlobalSettingsDataStore
+from customgendersettings.modinfo import ModInfo
+from customgendersettings.persistence.cgs_data_manager import CGSDataManager
+from customgendersettings.settings.data.data_store import CGSGlobalSettingsDataStore
 from sims4communitylib.persistence.data_management.common_data_manager_registry import CommonDataManagerRegistry
 from sims4communitylib.persistence.data_stores.common_data_store import CommonDataStore
 from sims4communitylib.services.common_service import CommonService

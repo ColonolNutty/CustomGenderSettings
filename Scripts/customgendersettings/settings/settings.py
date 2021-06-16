@@ -15,6 +15,7 @@ class CGSGlobalSetting:
     # Male Global Options
     ALL_MALE_SIMS_BREASTS = 'cgs_all_male_sims_breasts'
     ALL_MALE_SIMS_USE_TOILET_STANDING = 'cgs_all_male_sims_use_toilet_standing'
+    ALL_MALE_SIMS_USE_TOILET_SITTING = 'cgs_all_male_sims_use_toilet_sitting'
     ALL_MALE_SIMS_PREFER_MENSWEAR = 'cgs_all_male_sims_prefer_menswear'
     ALL_MALE_SIMS_HAVE_MASCULINE_FRAME = 'cgs_all_male_sims_have_masculine_frame'
     ALL_MALE_SIMS_CAN_REPRODUCE = 'cgs_all_male_sims_can_reproduce'
@@ -24,6 +25,7 @@ class CGSGlobalSetting:
     # Female Global Options
     ALL_FEMALE_SIMS_BREASTS = 'cgs_all_female_sims_breasts'
     ALL_FEMALE_SIMS_USE_TOILET_STANDING = 'cgs_all_female_sims_use_toilet_standing'
+    ALL_FEMALE_SIMS_USE_TOILET_SITTING = 'cgs_all_female_sims_use_toilet_sitting'
     ALL_FEMALE_SIMS_PREFER_MENSWEAR = 'cgs_all_female_sims_prefer_menswear'
     ALL_FEMALE_SIMS_HAVE_MASCULINE_FRAME = 'cgs_all_female_sims_have_masculine_frame'
     ALL_FEMALE_SIMS_CAN_REPRODUCE = 'cgs_all_female_sims_can_reproduce'

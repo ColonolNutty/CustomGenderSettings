@@ -6,7 +6,7 @@ https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Copyright (c) COLONOLNUTTY
 """
 from typing import Any, Dict
-from cncustomgendersettings.settings.settings import CGSGlobalSetting
+from customgendersettings.settings.settings import CGSGlobalSetting
 from sims4communitylib.persistence.data_stores.common_data_store import CommonDataStore
 
 
