@@ -1,7 +1,7 @@
 """
-This file is part of the Custom Gender Settings mod licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International public license (CC BY-NC-ND 4.0).
-https://creativecommons.org/licenses/by-nc-nd/4.0/
-https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+Custom Gender Settings is licensed under the Creative Commons Attribution 4.0 International public license (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
@@ -21,7 +21,7 @@ class CGSSettingUtils:
 
     def is_enabled_for_interactions(self, sim_info: SimInfo) -> bool:
         """ Determine if a Sim is enabled for Custom Gender Setting interactions. """
-        return CommonSpeciesUtils.is_human(sim_info) or CommonSpeciesUtils.is_pet(sim_info)
+        return CommonSpeciesUtils.is_human(sim_info) or CommonSpeciesUtils.is_animal(sim_info)
 
     def force_all_sims_to_male(self) -> bool:
         """ Determine if all Sims should be forced to Male. """

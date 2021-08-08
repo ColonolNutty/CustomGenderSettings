@@ -1,13 +1,14 @@
 """
-This file is part of the Custom Gender Settings mod licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International public license (CC BY-NC-ND 4.0).
-https://creativecommons.org/licenses/by-nc-nd/4.0/
-https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+Custom Gender Settings is licensed under the Creative Commons Attribution 4.0 International public license (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
 from typing import Any, Callable, Union
 from customgendersettings.enums.strings_enum import CGSStringId
 from customgendersettings.global_gender_options_injection import _CGSUpdateGenderOptions
+from customgendersettings.logging.has_cgs_log import HasCGSLog
 from customgendersettings.modinfo import ModInfo
 from customgendersettings.persistence.cgs_data_manager_utils import CGSDataManagerUtils
 from customgendersettings.settings.settings import CGSGlobalSetting
@@ -20,7 +21,6 @@ from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_acti
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_select_option import \
     CommonDialogSelectOption
 from sims4communitylib.exceptions.common_exceptions_handler import CommonExceptionHandler
-from sims4communitylib.logging.has_log import HasLog
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
@@ -28,10 +28,8 @@ from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
 from sims4communitylib.utils.sims.common_sim_utils import CommonSimUtils
 
-debug = False
 
-
-class CGSGlobalSettingsDialog(HasLog):
+class CGSGlobalSettingsDialog(HasCGSLog):
     """ Settings. """
     def __init__(self, sim_info: SimInfo, on_close: Callable[[], Any]=None):
         super().__init__()
@@ -75,7 +73,7 @@ class CGSGlobalSettingsDialog(HasLog):
                 return
 
             @CommonExceptionHandler.catch_exceptions(self.mod_identity)
-            def _on_ok(_d):
+            def _on_ok(_d) -> None:
                 self.log.debug('Ok chosen {}, \'{}\''.format(picked_option, _))
                 self._data_store.set_value_by_key(_, picked_option)
                 self.log.format_with_message('set value with', val=self._data_store.get_value_by_key(_))
@@ -84,7 +82,7 @@ class CGSGlobalSettingsDialog(HasLog):
                     _CGSUpdateGenderOptions()._update_gender_options(sim_info)
                 _reopen()
 
-            def _on_cancel(_d):
+            def _on_cancel(_d) -> None:
                 self.log.debug('Cancel chosen')
                 _reopen()
 
@@ -125,7 +123,7 @@ class CGSGlobalSettingsDialog(HasLog):
             )
         )
 
-        def _set_all_to_vanilla_gender_options_chosen():
+        def _set_all_to_vanilla_gender_options_chosen() -> None:
             for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
                 if CommonGenderUtils.is_male(sim_info):
                     CommonSimGenderOptionUtils.update_gender_options_to_vanilla_male(sim_info)
@@ -193,7 +191,7 @@ class CGSGlobalSettingsDialog(HasLog):
                 return
 
             @CommonExceptionHandler.catch_exceptions(self.mod_identity)
-            def _on_ok(_d):
+            def _on_ok(_d) -> None:
                 self._data_store.set_value_by_key(_, picked_option)
 
                 for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
@@ -201,7 +199,7 @@ class CGSGlobalSettingsDialog(HasLog):
                 _reopen()
 
             @CommonExceptionHandler.catch_exceptions(self.mod_identity)
-            def _on_cancel(_d):
+            def _on_cancel(_d) -> None:
                 _reopen()
 
             CommonOkCancelDialog(
@@ -328,14 +326,14 @@ class CGSGlobalSettingsDialog(HasLog):
                 _reopen()
                 return
 
-            def _on_ok(_d):
+            def _on_ok(_d) -> None:
                 self._data_store.set_value_by_key(_, picked_option)
 
                 for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
                     _CGSUpdateGenderOptions()._update_gender_options(sim_info)
                 _reopen()
 
-            def _on_cancel(_d):
+            def _on_cancel(_d) -> None:
                 _reopen()
 
             CommonOkCancelDialog(

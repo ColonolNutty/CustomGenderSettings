@@ -1,11 +1,13 @@
 """
-This file is part of the Custom Gender Settings mod licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International public license (CC BY-NC-ND 4.0).
-https://creativecommons.org/licenses/by-nc-nd/4.0/
-https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+Custom Gender Settings is licensed under the Creative Commons Attribution 4.0 International public license (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
 from typing import Callable, Any
+
+from customgendersettings.logging.has_cgs_log import HasCGSLog
 from customgendersettings.settings.dialog import CGSGlobalSettingsDialog
 from sims.sim_info import SimInfo
 from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
@@ -19,7 +21,6 @@ from customgendersettings.modinfo import ModInfo
 from customgendersettings.enums.strings_enum import CGSStringId
 from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.enums.traits_enum import CommonTraitId
-from sims4communitylib.logging.has_log import HasLog
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.utils.common_function_utils import CommonFunctionUtils
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
@@ -31,9 +32,9 @@ from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
 debug = False
 
 
-class CustomGenderSettingsDialog(HasLog):
+class CustomGenderSettingsDialog(HasCGSLog):
     """ A Dialog that opens custom gender settings. """
-    def __init__(self, sim_info: SimInfo, on_close: Callable[..., Any]=CommonFunctionUtils.noop):
+    def __init__(self, sim_info: SimInfo, on_close: Callable[[], None]=CommonFunctionUtils.noop):
         super().__init__()
         self._sim_info = sim_info
         self._on_close = on_close
@@ -48,15 +49,15 @@ class CustomGenderSettingsDialog(HasLog):
     def log_identifier(self) -> str:
         return 'cgs_dialog'
 
-    def open(self):
+    def open(self) -> None:
         """ Open the dialog. """
         try:
             def _on_close() -> None:
                 if self._on_close is not None:
                     self._on_close()
 
-            if CommonSpeciesUtils.is_pet(self._sim_info):
-                self._settings_pet(on_close=_on_close)
+            if CommonSpeciesUtils.is_animal(self._sim_info):
+                self._settings_animal(on_close=_on_close)
             else:
                 self._settings_human(on_close=_on_close)
         except Exception as ex:
@@ -67,7 +68,7 @@ class CustomGenderSettingsDialog(HasLog):
             if on_close is not None:
                 on_close()
 
-        def _reopen():
+        def _reopen() -> None:
             self._settings_human(on_close=on_close)
 
         option_dialog = CommonChooseObjectOptionDialog(
@@ -87,7 +88,7 @@ class CustomGenderSettingsDialog(HasLog):
             )
         )
 
-        def _set_to_vanilla_gender_chosen():
+        def _set_to_vanilla_gender_chosen() -> None:
             if CommonGenderUtils.is_male(self._sim_info):
                 CommonSimGenderOptionUtils.update_gender_options_to_vanilla_male(self._sim_info)
             else:
@@ -105,7 +106,7 @@ class CustomGenderSettingsDialog(HasLog):
             )
         )
 
-        def _on_gender_chosen():
+        def _on_gender_chosen() -> None:
             CommonGenderUtils.swap_gender(self._sim_info, update_gender_options=False)
             _reopen()
 
@@ -125,7 +126,7 @@ class CustomGenderSettingsDialog(HasLog):
             )
         )
 
-        def _on_physical_frame_chosen():
+        def _on_physical_frame_chosen() -> None:
             value = not CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info)
             CommonSimGenderOptionUtils.update_body_frame(self._sim_info, value)
             _reopen()
@@ -150,7 +151,7 @@ class CustomGenderSettingsDialog(HasLog):
         if CommonSimGenderOptionUtils.prefers_menswear(self._sim_info):
             current_clothing = CommonStringId.MASCULINE
 
-        def _on_clothing_preference_chosen():
+        def _on_clothing_preference_chosen() -> None:
             value = not CommonSimGenderOptionUtils.prefers_menswear(self._sim_info)
             CommonSimGenderOptionUtils.update_clothing_preference(self._sim_info, value)
             _reopen()
@@ -170,7 +171,7 @@ class CustomGenderSettingsDialog(HasLog):
         def _on_toggle_breasts_chosen(option_identifier: str, has_breasts: bool):
             self.log.format(option_identifier=option_identifier, has_breasts=has_breasts)
 
-            def _on_acknowledged(_):
+            def _on_acknowledged(_) -> None:
                 _reopen()
 
             CommonSimGenderOptionUtils.update_has_breasts(self._sim_info, has_breasts)
@@ -240,11 +241,11 @@ class CustomGenderSettingsDialog(HasLog):
 
         option_dialog.show(sim_info=self._sim_info)
 
-    def _settings_pet(self, on_close: Callable[[], Any]=None) -> None:
+    def _settings_animal(self, on_close: Callable[[], Any]=None) -> None:
         def _reopen() -> None:
-            self._settings_pet(on_close=on_close)
+            self._settings_animal(on_close=on_close)
 
-        def _on_close(*_, **__) -> None:
+        def _on_close() -> None:
             if on_close is not None:
                 on_close()
 
@@ -285,11 +286,11 @@ class CustomGenderSettingsDialog(HasLog):
         option_dialog.show(sim_info=self._sim_info)
 
     def _pregnancy_options(self, on_close: Callable[[], Any]=None) -> None:
-        def _on_close():
+        def _on_close() -> None:
             if on_close is not None:
                 on_close()
 
-        def _reopen():
+        def _reopen() -> None:
             self._pregnancy_options(on_close=on_close)
 
         option_dialog = CommonChooseObjectOptionDialog(

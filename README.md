@@ -1,6 +1,6 @@
 ## Custom Gender Settings (CGS) by ColonolNutty
 
-For more mods like this support me at my Patreon: https://www.patreon.com/colonolnutty
+For more SFW mods like this, support me at my Patreon: https://www.patreon.com/colonolnutty
 
 ### Disclaimer:
 
@@ -73,18 +73,18 @@ For more mods like this support me at my Patreon: https://www.patreon.com/colono
 
 ### Requirements:
 
-- Sims 4 version 1.56.52.1020 (Realm of Magic) or above
-- At least version 1.40 of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/download/v1.40/sims4communitylib.v1.40.zip)
+- Sims 4 version 1.77.131.1030 (Cottage Living Patch) or above
+- At least version 1.73 of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/download/v1.73/sims4communitylib.v1.73.zip)
 
 
 ### Troubleshooting Steps:
 
-- If the mod is not working for you, check out [these troubleshooting steps](https://github.com/ColonolNutty/Sims4CommunityLibrary/wiki/Troubleshooting-Mods-That-Use-S4CL)
+- If the mod is not working for you, check out [these troubleshooting steps](https://github.com/ColonolNutty/Sims4CommunityLibrary/wiki/Troubleshooting-Mods%2C-Both-Using-Or-Not-Using-S4CL)
 
 ### Copyright:
 
-Custom Gender Settings is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International public license (CC BY-NC-ND 4.0).
-https://creativecommons.org/licenses/by-nc-nd/4.0/
-https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+Custom Gender Settings is licensed under the Creative Commons Attribution 4.0 International public license (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY

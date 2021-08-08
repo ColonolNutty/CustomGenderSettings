@@ -1,7 +1,7 @@
 """
-This file is part of the Custom Gender Settings mod licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International public license (CC BY-NC-ND 4.0).
-https://creativecommons.org/licenses/by-nc-nd/4.0/
-https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+Custom Gender Settings is licensed under the Creative Commons Attribution 4.0 International public license (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
@@ -32,7 +32,7 @@ class _CGSUpdateGenderOptions:
             CommonGenderUtils.swap_gender(sim_info, update_gender_options=False)
             update_outfits = True
         if CommonGenderUtils.is_male(sim_info):
-            if CommonSpeciesUtils.is_pet(sim_info):
+            if CommonSpeciesUtils.is_animal(sim_info):
                 if self._setting_utils.all_male_options.can_reproduce() and not CommonSimGenderOptionUtils.can_reproduce(sim_info):
                     CommonSimGenderOptionUtils.update_can_reproduce(sim_info, True)
                 if self._setting_utils.all_male_options.cannot_reproduce() and not CommonSimGenderOptionUtils.can_not_reproduce(sim_info):
@@ -73,7 +73,7 @@ class _CGSUpdateGenderOptions:
                     CommonSimGenderOptionUtils.update_has_breasts(sim_info, False)
                     update_outfits = True
         elif CommonGenderUtils.is_female(sim_info):
-            if CommonSpeciesUtils.is_pet(sim_info):
+            if CommonSpeciesUtils.is_animal(sim_info):
                 if self._setting_utils.all_female_options.can_reproduce() and not CommonSimGenderOptionUtils.can_reproduce(sim_info):
                     CommonSimGenderOptionUtils.update_can_reproduce(sim_info, True)
                 if self._setting_utils.all_female_options.cannot_reproduce() and not CommonSimGenderOptionUtils.can_not_reproduce(sim_info):
