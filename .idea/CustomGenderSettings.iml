@@ -11,6 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Libraries/MSM" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Libraries/S4CL" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Scripts" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Utilities" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
