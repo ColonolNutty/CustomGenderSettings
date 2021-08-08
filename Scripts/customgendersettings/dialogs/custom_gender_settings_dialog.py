@@ -7,7 +7,6 @@ Copyright (c) COLONOLNUTTY
 """
 from typing import Callable, Any
 from customgendersettings.settings.dialog import CGSGlobalSettingsDialog
-from customgendersettings.utils.common_sim_gender_option_utils import CGSCommonSimGenderOptionUtils
 from sims.sim_info import SimInfo
 from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
@@ -208,7 +207,7 @@ class CustomGenderSettingsDialog(HasLog):
         )
 
         def _on_can_use_toilet_standing_chosen(_: str, can_use_toilet_standing: bool):
-            CGSCommonSimGenderOptionUtils.set_can_use_toilet_standing(self._sim_info, can_use_toilet_standing)
+            CommonSimGenderOptionUtils.set_can_use_toilet_standing(self._sim_info, can_use_toilet_standing)
             _reopen()
 
         option_dialog.add_option(
@@ -224,7 +223,7 @@ class CustomGenderSettingsDialog(HasLog):
         )
 
         def _on_can_use_toilet_sitting_chosen(_: str, can_use_toilet_sitting: bool):
-            CGSCommonSimGenderOptionUtils.set_can_use_toilet_sitting(self._sim_info, can_use_toilet_sitting)
+            CommonSimGenderOptionUtils.set_can_use_toilet_sitting(self._sim_info, can_use_toilet_sitting)
             _reopen()
 
         option_dialog.add_option(

@@ -14,7 +14,7 @@ class ModInfo(CommonModInfo):
 
     @property
     def _name(self) -> str:
-        return 'CGS'
+        return 'CustomGenderSettings'
 
     @property
     def _author(self) -> str:
@@ -28,4 +28,6 @@ class ModInfo(CommonModInfo):
     def _file_path(self) -> str:
         return ModInfo._FILE_PATH
 
-
+    @property
+    def _version(self) -> str:
+        return '1.9'

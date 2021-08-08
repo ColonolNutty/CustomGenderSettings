@@ -74,7 +74,7 @@ try:
             on_close: Callable[..., Any]=CommonFunctionUtils.noop,
             **kwargs
         ):
-            self.log.debug('Showing {} Dialog.'.format(self.mod_identity.name))
+            self.log.format_with_message('Showing Dialog.', mod_name=self.mod_identity.name)
             target_sim_info = CommonSimUtils.get_sim_info(target)
             CustomGenderSettingsDialog(target_sim_info, on_close=on_close).open()
 
@@ -85,7 +85,7 @@ try:
 
     # noinspection PyUnusedLocal
     @CommonInjectionUtils.inject_safely_into(ModInfo.get_identity(), OpenCustomGenderSettingsInteraction, OpenCustomGenderSettingsInteraction.on_test.__name__)
-    def _hide_interaction(original, cls, *_, **__) -> TestResult:
+    def _cgs_hide_normal_settings_interaction(original, cls, *_, **__) -> TestResult:
         log.debug('Hiding the CGS Open Dialog interaction in favor of the Mod Settings Menu.')
         return TestResult.NONE
 except:

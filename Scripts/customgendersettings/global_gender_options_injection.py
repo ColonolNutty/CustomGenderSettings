@@ -7,7 +7,6 @@ Copyright (c) COLONOLNUTTY
 """
 from customgendersettings.modinfo import ModInfo
 from customgendersettings.settings.setting_utils import CGSSettingUtils
-from customgendersettings.utils.common_sim_gender_option_utils import CGSCommonSimGenderOptionUtils
 from sims.occult.occult_enums import OccultType
 from sims.outfits.outfit_utils import get_maximum_outfits_for_category
 from sims.sim_info import SimInfo
@@ -40,16 +39,16 @@ class _CGSUpdateGenderOptions:
                     CommonSimGenderOptionUtils.update_can_reproduce(sim_info, False)
             elif CommonSpeciesUtils.is_human(sim_info):
                 if self._setting_utils.all_male_options.use_toilet_standing() and not CommonSimGenderOptionUtils.uses_toilet_standing(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, True)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, True)
                     update_outfits = True
                 if self._setting_utils.all_male_options.dont_use_toilet_standing() and CommonSimGenderOptionUtils.uses_toilet_standing(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, False)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, False)
                     update_outfits = True
                 if self._setting_utils.all_male_options.use_toilet_sitting() and not CommonSimGenderOptionUtils.uses_toilet_sitting(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, True)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, True)
                     update_outfits = True
                 if self._setting_utils.all_male_options.dont_use_toilet_sitting() and CommonSimGenderOptionUtils.uses_toilet_sitting(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, False)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, False)
                     update_outfits = True
                 if self._setting_utils.all_male_options.prefer_menswear() and not CommonSimGenderOptionUtils.prefers_menswear(sim_info):
                     CommonSimGenderOptionUtils.update_clothing_preference(sim_info, True)
@@ -81,16 +80,16 @@ class _CGSUpdateGenderOptions:
                     CommonSimGenderOptionUtils.update_can_reproduce(sim_info, False)
             elif CommonSpeciesUtils.is_human(sim_info):
                 if self._setting_utils.all_female_options.use_toilet_standing() and not CommonSimGenderOptionUtils.uses_toilet_standing(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, True)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, True)
                     update_outfits = True
                 if self._setting_utils.all_female_options.dont_use_toilet_standing() and CommonSimGenderOptionUtils.uses_toilet_standing(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, False)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_standing(sim_info, False)
                     update_outfits = True
                 if self._setting_utils.all_female_options.use_toilet_sitting() and not CommonSimGenderOptionUtils.uses_toilet_sitting(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, True)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, True)
                     update_outfits = True
                 if self._setting_utils.all_female_options.dont_use_toilet_sitting() and CommonSimGenderOptionUtils.uses_toilet_sitting(sim_info):
-                    CGSCommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, False)
+                    CommonSimGenderOptionUtils.set_can_use_toilet_sitting(sim_info, False)
                     update_outfits = True
                 if self._setting_utils.all_female_options.prefer_menswear() and not CommonSimGenderOptionUtils.prefers_menswear(sim_info):
                     CommonSimGenderOptionUtils.update_clothing_preference(sim_info, True)
