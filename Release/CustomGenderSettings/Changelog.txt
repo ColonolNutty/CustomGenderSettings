@@ -1,0 +1,50 @@
+Version 1.9:
+- Added options to set the voice pitch and voice actor of a Sim
+- Custom Gender Settings now requires at least version 1.73 of S4CL
+
+Version 1.8:
+- Added the ability to allow a Sim to be both Toilet Standing and Toilet Sitting.
+- Added the ability to toggle all Male and all Female Sims to Use Toilet Standing, Use Toilet Sitting, or Both
+- Renamed the mod files and removed cn_ from the names. Make sure you remove the old version!
+
+Version 1.7:
+- Removed the persistent data that would some times mess with the gender options of Sims.
+  - Removing this data also reduces the size of the mod as well as a decrease in save bloat.
+
+Version 1.6:
+- Swapping genders no longer updates gender options (Both individual Sims and in global settings)
+- CGS now requires at least version 1.47 of S4CL
+
+Version 1.5:
+- Fixed CGS settings not opening properly for pets
+
+Version 1.4:
+- Added Global Settings for forcing all Sims to be a certain gender or to have certain gender options applied to them.
+- A setting to force all Sims to a certain Gender (and continue to do so whenever they spawn)
+- A setting to revert all Sims to their vanilla gender options (Based on their current gender)
+  - Male Sims will be able to impregnate, not be able to be impregnated, will use toilet standing, etc.
+  - Female Sims will not be able to impregnate, be able to be impregnated, will use toilet sitting, etc.
+- Settings to force all Sims to have certain Gender Options (Toilet Standing/Sitting, Can Impregnate, etc.)
+- CGS is now available for Child and Toddler Sims
+  - The only settings that appear to change anything are Toilet Usage, Clothing Preference, and Gender.
+  - The other settings will only do anything once they become a Teen or Adult. (Pregnancy, Toggle Breasts, etc.)
+- CGS now utilizes the events system of S4CL by dispatching events when gender options have changed!
+  - Listen for those events and you won't have to directly reference CGS!
+- CGS now requires at least version 1.40 of S4CL!
+
+Version 1.3:
+- Fixed the alert after changing the breast toggle not reopening the CGS dialog
+- At least version 1.2.22 of S4CL is required
+- Enable Pets for CGS
+- Add Mod Settings Menu support
+
+Version 1.2:
+- Added Breast Toggle setting for forcing breasts on or off for both Male and Female Sims.
+- Updated the CGS dialog to use new S4CL dialog tech.
+
+
+Version 1.0.1:
+- Fix accidentally included imports
+
+Version 1.0:
+- Initial Release
