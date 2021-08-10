@@ -10,22 +10,30 @@ from typing import Callable, Any
 from customgendersettings.logging.has_cgs_log import HasCGSLog
 from customgendersettings.settings.dialog import CGSGlobalSettingsDialog
 from sims.sim_info import SimInfo
+from sims4communitylib.dialogs.common_choice_outcome import CommonChoiceOutcome
 from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
 from sims4communitylib.dialogs.option_dialogs.options.common_dialog_option_context import CommonDialogOptionContext
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_action_option import \
     CommonDialogActionOption
+from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_input_option import \
+    CommonDialogInputFloatOption
+from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_select_option import \
+    CommonDialogSelectOption
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_toggle_option import \
     CommonDialogToggleOption
 from customgendersettings.modinfo import ModInfo
 from customgendersettings.enums.strings_enum import CGSStringId
+from sims4communitylib.enums.common_voice_actor_type import CommonVoiceActorType
 from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.enums.traits_enum import CommonTraitId
+from sims4communitylib.exceptions.common_exceptions_handler import CommonExceptionHandler
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.utils.common_function_utils import CommonFunctionUtils
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
 from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
+from sims4communitylib.utils.sims.common_sim_voice_utils import CommonSimVoiceUtils
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
 
@@ -107,7 +115,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
         )
 
         def _on_gender_chosen() -> None:
-            CommonGenderUtils.swap_gender(self._sim_info, update_gender_options=False)
+            CommonGenderUtils.swap_gender(self._sim_info, update_gender_options=False, update_outfits=False)
             _reopen()
 
         current_gender_string = CGSStringId.MALE
@@ -239,9 +247,53 @@ class CustomGenderSettingsDialog(HasCGSLog):
             )
         )
 
+        def _on_voice_pitch_changed(_: str, setting_value: float, outcome: CommonChoiceOutcome):
+            if setting_value is None or CommonChoiceOutcome.is_error_or_cancel(outcome):
+                _reopen()
+                return
+            CommonSimVoiceUtils.set_voice_pitch(self._sim_info, setting_value)
+            _reopen()
+
+        voice_pitch = CommonSimVoiceUtils.get_voice_pitch(self._sim_info)
+        option_dialog.add_option(
+            CommonDialogInputFloatOption(
+                'VoicePitch',
+                voice_pitch,
+                CommonDialogOptionContext(
+                    CGSStringId.SET_VOICE_PITCH_TITLE,
+                    CGSStringId.SET_VOICE_PITCH_DESCRIPTION,
+                    title_tokens=(
+                        str(voice_pitch),
+                    ),
+                    description_tokens=(
+                        '-1.0',
+                        '1.0'
+                    )
+                ),
+                min_value=-1.0,
+                max_value=1.0,
+                on_chosen=_on_voice_pitch_changed
+            )
+        )
+
+        voice_actor = CommonSimVoiceUtils.get_voice_actor(self._sim_info)
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.SET_VOICE_ACTOR_TITLE,
+                    CGSStringId.SET_VOICE_ACTOR_DESCRIPTION,
+                    title_tokens=(
+                        str(voice_actor.name if isinstance(voice_actor, CommonVoiceActorType) else voice_actor),
+                    ),
+                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
+                ),
+                on_chosen=lambda *_, **__: self._set_voice_actor(on_close=_reopen)
+            )
+        )
+
         option_dialog.show(sim_info=self._sim_info)
 
-    def _settings_animal(self, on_close: Callable[[], Any]=None) -> None:
+    def _settings_animal(self, on_close: Callable[[], None]=None) -> None:
         def _reopen() -> None:
             self._settings_animal(on_close=on_close)
 
@@ -283,9 +335,53 @@ class CustomGenderSettingsDialog(HasCGSLog):
             )
         )
 
+        def _on_voice_pitch_changed(_: str, setting_value: float, outcome: CommonChoiceOutcome):
+            if setting_value is None or CommonChoiceOutcome.is_error_or_cancel(outcome):
+                _reopen()
+                return
+            CommonSimVoiceUtils.set_voice_pitch(self._sim_info, setting_value)
+            _reopen()
+
+        voice_pitch = CommonSimVoiceUtils.get_voice_pitch(self._sim_info)
+        option_dialog.add_option(
+            CommonDialogInputFloatOption(
+                'VoicePitch',
+                voice_pitch,
+                CommonDialogOptionContext(
+                    CGSStringId.SET_VOICE_PITCH_TITLE,
+                    CGSStringId.SET_VOICE_PITCH_DESCRIPTION,
+                    title_tokens=(
+                        str(voice_pitch),
+                    ),
+                    description_tokens=(
+                        '-1.0',
+                        '1.0'
+                    )
+                ),
+                min_value=-1.0,
+                max_value=1.0,
+                on_chosen=_on_voice_pitch_changed
+            )
+        )
+
+        voice_actor = CommonSimVoiceUtils.get_voice_actor(self._sim_info)
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.SET_VOICE_ACTOR_TITLE,
+                    CGSStringId.SET_VOICE_ACTOR_DESCRIPTION,
+                    title_tokens=(
+                        str(voice_actor.name if isinstance(voice_actor, CommonVoiceActorType) else voice_actor),
+                    ),
+                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
+                ),
+                on_chosen=lambda *_, **__: self._set_voice_actor(on_close=_reopen)
+            )
+        )
+
         option_dialog.show(sim_info=self._sim_info)
 
-    def _pregnancy_options(self, on_close: Callable[[], Any]=None) -> None:
+    def _pregnancy_options(self, on_close: Callable[[], None]=None) -> None:
         def _on_close() -> None:
             if on_close is not None:
                 on_close()
@@ -335,5 +431,47 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 on_chosen=_can_be_impregnated_chosen
             )
         )
+
+        option_dialog.show(sim_info=self._sim_info)
+
+    def _set_voice_actor(self, on_close: Callable[[], None]=None) -> None:
+        def _on_close() -> None:
+            if on_close is not None:
+                on_close()
+
+        voice_actor = CommonSimVoiceUtils.get_voice_actor(self._sim_info)
+        option_dialog = CommonChooseObjectOptionDialog(
+            CGSStringId.SET_VOICE_ACTOR_TITLE,
+            CGSStringId.SET_VOICE_ACTOR_DESCRIPTION,
+            title_tokens=(
+                str(voice_actor.name if isinstance(voice_actor, CommonVoiceActorType) else voice_actor),
+            ),
+            mod_identity=self.mod_identity,
+            on_close=_on_close
+        )
+
+        @CommonExceptionHandler.catch_exceptions(self.mod_identity, fallback_return=False)
+        def _on_chosen(_: str, chosen: CommonVoiceActorType) -> None:
+            if chosen is None:
+                self.log.format_with_message('No chosen', chosen=chosen)
+                _on_close()
+                return
+            CommonSimVoiceUtils.set_voice_actor(self._sim_info, chosen)
+            _on_close()
+
+        voice_actor_types = CommonSimVoiceUtils.determine_available_voice_types(self._sim_info)
+        for voice_actor_type in voice_actor_types:
+            option_dialog.add_option(
+                CommonDialogSelectOption(
+                    voice_actor_type.name,
+                    voice_actor_type,
+                    CommonDialogOptionContext(
+                        voice_actor_type.name,
+                        0,
+                        icon=CommonIconUtils.load_checked_square_icon() if voice_actor_type == voice_actor else CommonIconUtils.load_unchecked_square_icon()
+                    ),
+                    on_chosen=_on_chosen
+                )
+            )
 
         option_dialog.show(sim_info=self._sim_info)

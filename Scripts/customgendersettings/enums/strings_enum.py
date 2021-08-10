@@ -108,3 +108,11 @@ class CGSStringId(CommonEnumIntBase):
     YES = 0x3A6189A6
     YES_UPDATE_ALL_SIMS = 1164639348
     NO = 1668749452
+
+    # Tokens: {0.String} (Current)
+    SET_VOICE_PITCH_TITLE = 0xAEE941FA
+    # Tokens: {0.String} (Min) {1.String} (Max)
+    SET_VOICE_PITCH_DESCRIPTION = 0x5F733410
+    # Tokens: {0.String} (Current)
+    SET_VOICE_ACTOR_TITLE = 0x19096ECB
+    SET_VOICE_ACTOR_DESCRIPTION = 0x8D42E784
