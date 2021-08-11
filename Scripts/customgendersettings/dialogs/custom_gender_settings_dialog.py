@@ -12,6 +12,7 @@ from customgendersettings.settings.dialog import CGSGlobalSettingsDialog
 from sims.sim_info import SimInfo
 from sims4communitylib.dialogs.common_choice_outcome import CommonChoiceOutcome
 from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
+from sims4communitylib.dialogs.ok_cancel_dialog import CommonOkCancelDialog
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
 from sims4communitylib.dialogs.option_dialogs.options.common_dialog_option_context import CommonDialogOptionContext
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_action_option import \
@@ -28,7 +29,6 @@ from sims4communitylib.enums.common_voice_actor_type import CommonVoiceActorType
 from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.enums.traits_enum import CommonTraitId
 from sims4communitylib.exceptions.common_exceptions_handler import CommonExceptionHandler
-from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.utils.common_function_utils import CommonFunctionUtils
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
 from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
@@ -36,8 +36,7 @@ from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSi
 from sims4communitylib.utils.sims.common_sim_voice_utils import CommonSimVoiceUtils
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
-
-debug = False
+from ui.ui_dialog import UiDialogOkCancel
 
 
 class CustomGenderSettingsDialog(HasCGSLog):
@@ -46,11 +45,6 @@ class CustomGenderSettingsDialog(HasCGSLog):
         super().__init__()
         self._sim_info = sim_info
         self._on_close = on_close
-
-    # noinspection PyMissingOrEmptyDocstring
-    @property
-    def mod_identity(self) -> CommonModIdentity:
-        return ModInfo.get_identity()
 
     # noinspection PyMissingOrEmptyDocstring
     @property
@@ -64,20 +58,17 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 if self._on_close is not None:
                     self._on_close()
 
-            if CommonSpeciesUtils.is_animal(self._sim_info):
-                self._settings_animal(on_close=_on_close)
-            else:
-                self._settings_human(on_close=_on_close)
+            self._settings(on_close=_on_close)
         except Exception as ex:
             self.log.error('Error occurred while opening custom gender settings dialog.', exception=ex)
 
-    def _settings_human(self, on_close: Callable[[], Any]=None) -> None:
+    def _settings(self, on_close: Callable[[], Any]=None) -> None:
         def _on_close() -> None:
             if on_close is not None:
                 on_close()
 
         def _reopen() -> None:
-            self._settings_human(on_close=on_close)
+            self._settings(on_close=on_close)
 
         option_dialog = CommonChooseObjectOptionDialog(
             CommonStringId.CUSTOM_GENDER_SETTINGS,
@@ -115,8 +106,23 @@ class CustomGenderSettingsDialog(HasCGSLog):
         )
 
         def _on_gender_chosen() -> None:
-            CommonGenderUtils.swap_gender(self._sim_info, update_gender_options=False, update_outfits=False)
-            _reopen()
+            @CommonExceptionHandler.catch_exceptions(ModInfo.get_identity(), fallback_return=False)
+            def _on_ok(_: UiDialogOkCancel):
+                CommonGenderUtils.swap_gender(self._sim_info, update_gender_options=True, update_voice=True, update_outfits=True)
+                _reopen()
+
+            @CommonExceptionHandler.catch_exceptions(self.mod_identity, fallback_return=False)
+            def _on_cancel(_: UiDialogOkCancel):
+                CommonGenderUtils.swap_gender(self._sim_info, update_gender_options=False, update_voice=False, update_outfits=False)
+                _reopen()
+
+            CommonOkCancelDialog(
+                CGSStringId.UPDATE_GENDER_OPTIONS_TOO_QUESTION,
+                CGSStringId.DO_YOU_WANT_GENDER_OPTIONS_UPDATED_TOO,
+                ok_text_identifier=CommonStringId.S4CL_YES,
+                cancel_text_identifier=CommonStringId.S4CL_NO,
+                mod_identity=self.mod_identity
+            ).show(on_ok_selected=_on_ok, on_cancel_selected=_on_cancel)
 
         current_gender_string = CGSStringId.MALE
         if CommonGenderUtils.is_female(self._sim_info):
@@ -134,75 +140,76 @@ class CustomGenderSettingsDialog(HasCGSLog):
             )
         )
 
-        def _on_physical_frame_chosen() -> None:
-            value = not CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info)
-            CommonSimGenderOptionUtils.update_body_frame(self._sim_info, value)
-            _reopen()
-
-        current_body_frame = CommonStringId.FEMININE
-        if CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info):
-            current_body_frame = CommonStringId.MASCULINE
-
-        option_dialog.add_option(
-            CommonDialogActionOption(
-                CommonDialogOptionContext(
-                    CommonStringId.PHYSICAL_FRAME,
-                    CGSStringId.CGS_CURRENT,
-                    description_tokens=(current_body_frame,),
-                    icon=CommonIconUtils.load_arrow_right_icon()
-                ),
-                on_chosen=_on_physical_frame_chosen
-            )
-        )
-
-        current_clothing = CommonStringId.FEMININE
-        if CommonSimGenderOptionUtils.prefers_menswear(self._sim_info):
-            current_clothing = CommonStringId.MASCULINE
-
-        def _on_clothing_preference_chosen() -> None:
-            value = not CommonSimGenderOptionUtils.prefers_menswear(self._sim_info)
-            CommonSimGenderOptionUtils.update_clothing_preference(self._sim_info, value)
-            _reopen()
-
-        option_dialog.add_option(
-            CommonDialogActionOption(
-                CommonDialogOptionContext(
-                    CommonStringId.CLOTHING_PREFERENCE,
-                    CGSStringId.CGS_CURRENT,
-                    description_tokens=(current_clothing,),
-                    icon=CommonIconUtils.load_arrow_right_icon()
-                ),
-                on_chosen=_on_clothing_preference_chosen
-            )
-        )
-
-        def _on_toggle_breasts_chosen(option_identifier: str, has_breasts: bool):
-            self.log.format(option_identifier=option_identifier, has_breasts=has_breasts)
-
-            def _on_acknowledged(_) -> None:
+        if CommonSpeciesUtils.is_human(self._sim_info):
+            def _on_physical_frame_chosen() -> None:
+                value = not CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info)
+                CommonSimGenderOptionUtils.update_body_frame(self._sim_info, value)
                 _reopen()
 
-            CommonSimGenderOptionUtils.update_has_breasts(self._sim_info, has_breasts)
-            CommonOkDialog(
-                CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_NAME,
-                CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_DESCRIPTION
-            ).show(on_acknowledged=_on_acknowledged)
+            current_body_frame = CommonStringId.FEMININE
+            if CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info):
+                current_body_frame = CommonStringId.MASCULINE
 
-        has_vanilla_breasts = False
-        if CommonGenderUtils.is_female(self._sim_info):
-            has_vanilla_breasts = not CommonTraitUtils.has_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_OFF)
-
-        option_dialog.add_option(
-            CommonDialogToggleOption(
-                'ToggleBreasts',
-                CommonTraitUtils.has_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_ON) or has_vanilla_breasts,
-                CommonDialogOptionContext(
-                    CGSStringId.CGS_TOGGLE_BREASTS_NAME,
-                    CGSStringId.CGS_TOGGLE_BREASTS_DESCRIPTION
-                ),
-                on_chosen=_on_toggle_breasts_chosen
+            option_dialog.add_option(
+                CommonDialogActionOption(
+                    CommonDialogOptionContext(
+                        CommonStringId.PHYSICAL_FRAME,
+                        CGSStringId.CGS_CURRENT,
+                        description_tokens=(current_body_frame,),
+                        icon=CommonIconUtils.load_arrow_right_icon()
+                    ),
+                    on_chosen=_on_physical_frame_chosen
+                )
             )
-        )
+
+            current_clothing = CommonStringId.FEMININE
+            if CommonSimGenderOptionUtils.prefers_menswear(self._sim_info):
+                current_clothing = CommonStringId.MASCULINE
+
+            def _on_clothing_preference_chosen() -> None:
+                value = not CommonSimGenderOptionUtils.prefers_menswear(self._sim_info)
+                CommonSimGenderOptionUtils.update_clothing_preference(self._sim_info, value)
+                _reopen()
+
+            option_dialog.add_option(
+                CommonDialogActionOption(
+                    CommonDialogOptionContext(
+                        CommonStringId.CLOTHING_PREFERENCE,
+                        CGSStringId.CGS_CURRENT,
+                        description_tokens=(current_clothing,),
+                        icon=CommonIconUtils.load_arrow_right_icon()
+                    ),
+                    on_chosen=_on_clothing_preference_chosen
+                )
+            )
+
+            def _on_toggle_breasts_chosen(option_identifier: str, has_breasts: bool):
+                self.log.format(option_identifier=option_identifier, has_breasts=has_breasts)
+
+                def _on_acknowledged(_) -> None:
+                    _reopen()
+
+                CommonSimGenderOptionUtils.update_has_breasts(self._sim_info, has_breasts)
+                CommonOkDialog(
+                    CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_NAME,
+                    CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_DESCRIPTION
+                ).show(on_acknowledged=_on_acknowledged)
+
+            has_vanilla_breasts = False
+            if CommonGenderUtils.is_female(self._sim_info):
+                has_vanilla_breasts = not CommonTraitUtils.has_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_OFF)
+
+            option_dialog.add_option(
+                CommonDialogToggleOption(
+                    'ToggleBreasts',
+                    CommonTraitUtils.has_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_ON) or has_vanilla_breasts,
+                    CommonDialogOptionContext(
+                        CGSStringId.CGS_TOGGLE_BREASTS_NAME,
+                        CGSStringId.CGS_TOGGLE_BREASTS_DESCRIPTION
+                    ),
+                    on_chosen=_on_toggle_breasts_chosen
+                )
+            )
 
         option_dialog.add_option(
             CommonDialogActionOption(
@@ -293,94 +300,6 @@ class CustomGenderSettingsDialog(HasCGSLog):
 
         option_dialog.show(sim_info=self._sim_info)
 
-    def _settings_animal(self, on_close: Callable[[], None]=None) -> None:
-        def _reopen() -> None:
-            self._settings_animal(on_close=on_close)
-
-        def _on_close() -> None:
-            if on_close is not None:
-                on_close()
-
-        def _on_chosen(_: str, picked_option: bool):
-            if picked_option is None:
-                _on_close()
-                return
-            value = not CommonSimGenderOptionUtils.can_reproduce(self._sim_info)
-            CommonSimGenderOptionUtils.update_can_reproduce(self._sim_info, value)
-            _reopen()
-
-        option_dialog = CommonChooseObjectOptionDialog(
-            CommonStringId.CUSTOM_GENDER_SETTINGS,
-            CGSStringId.CGS_CUSTOM_GENDER_SETTINGS_DESCRIPTION,
-            mod_identity=self.mod_identity,
-            on_close=_on_close
-        )
-
-        current_selected = CGSStringId.NATURAL
-        can_reproduce = CommonSimGenderOptionUtils.can_reproduce(self._sim_info)
-        if not can_reproduce:
-            current_selected = CGSStringId.FIXED
-
-        option_dialog.add_option(
-            CommonDialogToggleOption(
-                'Reproductive Settings',
-                can_reproduce,
-                CommonDialogOptionContext(
-                    CGSStringId.REPRODUCTIVE_SETTINGS,
-                    CGSStringId.CGS_CURRENT,
-                    description_tokens=(current_selected,),
-                    icon=CommonIconUtils.load_question_mark_icon()
-                ),
-                on_chosen=_on_chosen
-            )
-        )
-
-        def _on_voice_pitch_changed(_: str, setting_value: float, outcome: CommonChoiceOutcome):
-            if setting_value is None or CommonChoiceOutcome.is_error_or_cancel(outcome):
-                _reopen()
-                return
-            CommonSimVoiceUtils.set_voice_pitch(self._sim_info, setting_value)
-            _reopen()
-
-        voice_pitch = CommonSimVoiceUtils.get_voice_pitch(self._sim_info)
-        option_dialog.add_option(
-            CommonDialogInputFloatOption(
-                'VoicePitch',
-                voice_pitch,
-                CommonDialogOptionContext(
-                    CGSStringId.SET_VOICE_PITCH_TITLE,
-                    CGSStringId.SET_VOICE_PITCH_DESCRIPTION,
-                    title_tokens=(
-                        str(voice_pitch),
-                    ),
-                    description_tokens=(
-                        '-1.0',
-                        '1.0'
-                    )
-                ),
-                min_value=-1.0,
-                max_value=1.0,
-                on_chosen=_on_voice_pitch_changed
-            )
-        )
-
-        voice_actor = CommonSimVoiceUtils.get_voice_actor(self._sim_info)
-        option_dialog.add_option(
-            CommonDialogActionOption(
-                CommonDialogOptionContext(
-                    CGSStringId.SET_VOICE_ACTOR_TITLE,
-                    CGSStringId.SET_VOICE_ACTOR_DESCRIPTION,
-                    title_tokens=(
-                        str(voice_actor.name if isinstance(voice_actor, CommonVoiceActorType) else voice_actor),
-                    ),
-                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
-                ),
-                on_chosen=lambda *_, **__: self._set_voice_actor(on_close=_reopen)
-            )
-        )
-
-        option_dialog.show(sim_info=self._sim_info)
-
     def _pregnancy_options(self, on_close: Callable[[], None]=None) -> None:
         def _on_close() -> None:
             if on_close is not None:
@@ -395,6 +314,34 @@ class CustomGenderSettingsDialog(HasCGSLog):
             mod_identity=self.mod_identity,
             on_close=_on_close
         )
+
+        if CommonSpeciesUtils.is_animal(self._sim_info):
+            def _on_reproductive_chosen(_: str, picked_option: bool):
+                if picked_option is None:
+                    _on_close()
+                    return
+                value = not CommonSimGenderOptionUtils.can_reproduce(self._sim_info)
+                CommonSimGenderOptionUtils.update_can_reproduce(self._sim_info, value)
+                _reopen()
+
+            current_selected = CGSStringId.NATURAL
+            can_reproduce = CommonSimGenderOptionUtils.can_reproduce(self._sim_info)
+            if not can_reproduce:
+                current_selected = CGSStringId.FIXED
+
+            option_dialog.add_option(
+                CommonDialogToggleOption(
+                    'Reproductive Settings',
+                    can_reproduce,
+                    CommonDialogOptionContext(
+                        CGSStringId.REPRODUCTIVE_SETTINGS,
+                        CGSStringId.CGS_CURRENT,
+                        description_tokens=(current_selected,),
+                        icon=CommonIconUtils.load_question_mark_icon()
+                    ),
+                    on_chosen=_on_reproductive_chosen
+                )
+            )
 
         def _can_impregnate_chosen(option_identifier: str, can_get_others_pregnant: bool):
             self.log.format(option_identifier=option_identifier, can_get_others_pregnant=can_get_others_pregnant)
