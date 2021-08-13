@@ -5,10 +5,10 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
-from sims4communitylib.enums.enumtypes.int_enum import CommonEnumIntBase
+from sims4communitylib.enums.enumtypes.common_int import CommonInt
 
 
-class CGSStringId(CommonEnumIntBase):
+class CGSStringId(CommonInt):
     """ String identifiers used by the CGS mod. """
 
     # Custom Gender Settings
@@ -50,7 +50,14 @@ class CGSStringId(CommonEnumIntBase):
 
     # Global Settings
     CGS_FORCE_ALL_SIMS_TO_GENDER_NAME = 1154608140
-    CGS_FORCE_ALL_SIMS_TO_GENDER_DESCRIPTION = 3485783458
+    CGS_FORCE_ALL_SIMS_TO_GENDER_DESCRIPTION = 0xA2C5B22F
+    CGS_UPDATING_ALL_SIMS_NAME = 0x8DB40722
+    CGS_UPDATING_ALL_SIMS_DESCRIPTION = 0xFF95D46A
+    # Tokens: {0.String} (Number of Sims)
+    CGS_UPDATED_ALL_SIMS_NAME = 0x4678FF4F
+    # Tokens: {0.String} (Number of Sims)
+    CGS_UPDATED_ALL_SIMS_DESCRIPTION = 0xC6C35E39
+
     CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_NAME = 3529589645
     CGS_RESET_ALL_SIMS_TO_ORIGINAL_GENDER_DESCRIPTION = 457411642
     SET_ALL_SIMS_TO_VANILLA_GENDER_OPTIONS_NAME = 2749387117

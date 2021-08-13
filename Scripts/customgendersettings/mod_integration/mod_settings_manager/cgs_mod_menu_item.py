@@ -9,7 +9,6 @@ Copyright (c) COLONOLNUTTY
 try:
     from customgendersettings.dialogs.custom_gender_settings_dialog import CustomGenderSettingsDialog
     from customgendersettings.enums.strings_enum import CGSStringId
-    from customgendersettings.interactions.open_custom_gender_settings import OpenCustomGenderSettingsInteraction
     from customgendersettings.modinfo import ModInfo
     from customgendersettings.settings.setting_utils import CGSSettingUtils
     from sims4communitylib.enums.strings_enum import CommonStringId
@@ -80,13 +79,5 @@ try:
 
 
     S4MSMModSettingsRegistry().register_menu_item(_CGSMSMMenuItem())
-
-    log = CommonLogRegistry().register_log(ModInfo.get_identity(), 'cgs_settings')
-
-    # noinspection PyUnusedLocal
-    @CommonInjectionUtils.inject_safely_into(ModInfo.get_identity(), OpenCustomGenderSettingsInteraction, OpenCustomGenderSettingsInteraction.on_test.__name__)
-    def _cgs_hide_normal_settings_interaction(original, cls, *_, **__) -> TestResult:
-        log.debug('Hiding the CGS Open Dialog interaction in favor of the Mod Settings Menu.')
-        return TestResult.NONE
 except:
     pass

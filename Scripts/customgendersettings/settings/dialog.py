@@ -23,6 +23,7 @@ from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_sele
 from sims4communitylib.exceptions.common_exceptions_handler import CommonExceptionHandler
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
+from sims4communitylib.notifications.common_basic_notification import CommonBasicNotification
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
 from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
@@ -35,6 +36,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
         super().__init__()
         self._sim_info = sim_info
         self._on_close = on_close
+        self._has_changes = False
         self._data_store = CGSDataManagerUtils().get_global_mod_settings_data_store()
 
     # noinspection PyMissingOrEmptyDocstring
@@ -50,6 +52,27 @@ class CGSGlobalSettingsDialog(HasCGSLog):
     def open(self) -> None:
         """ Open Dialog. """
         def _on_close() -> None:
+            if self._has_changes:
+                CommonBasicNotification(
+                    CGSStringId.CGS_UPDATING_ALL_SIMS_NAME,
+                    CGSStringId.CGS_UPDATING_ALL_SIMS_DESCRIPTION
+                ).show()
+
+                sims_updated = 0
+                for sim_info in CommonSimUtils.get_sim_info_for_all_sims_generator():
+                    try:
+                        _CGSUpdateGenderOptions()._apply_global_updates(sim_info)
+                        sims_updated += 1
+                    except Exception as ex:
+                        self.log.format_error_with_message('Failed to update Sim to the specified gender options.', exception=ex, throw=False)
+
+                CommonBasicNotification(
+                    CGSStringId.CGS_UPDATED_ALL_SIMS_NAME,
+                    CGSStringId.CGS_UPDATED_ALL_SIMS_DESCRIPTION,
+                    title_tokens=(str(sims_updated),),
+                    description_tokens=(str(sims_updated),)
+                ).show()
+
             if self._on_close is not None:
                 self._on_close()
 
@@ -77,9 +100,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
                 self.log.debug('Ok chosen {}, \'{}\''.format(picked_option, _))
                 self._data_store.set_value_by_key(_, picked_option)
                 self.log.format_with_message('set value with', val=self._data_store.get_value_by_key(_))
-
-                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
-                    _CGSUpdateGenderOptions()._update_gender_options(sim_info)
+                self._has_changes = True
                 _reopen()
 
             def _on_cancel(_d) -> None:
@@ -193,9 +214,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             @CommonExceptionHandler.catch_exceptions(self.mod_identity)
             def _on_ok(_d) -> None:
                 self._data_store.set_value_by_key(_, picked_option)
-
-                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
-                    _CGSUpdateGenderOptions()._update_gender_options(sim_info)
+                self._has_changes = True
                 _reopen()
 
             @CommonExceptionHandler.catch_exceptions(self.mod_identity)
@@ -328,9 +347,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
 
             def _on_ok(_d) -> None:
                 self._data_store.set_value_by_key(_, picked_option)
-
-                for sim_info in CommonSimUtils.get_instanced_sim_info_for_all_sims_generator():
-                    _CGSUpdateGenderOptions()._update_gender_options(sim_info)
+                self._has_changes = True
                 _reopen()
 
             def _on_cancel(_d) -> None:
