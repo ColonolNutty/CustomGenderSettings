@@ -1,5 +1,10 @@
 Version 1.9:
 - Added options to set the voice pitch and voice actor of a Sim
+- Added many new gender options for Animal Sims
+- When Sims change genders globally, their voice and outfit will be updated to be gender appropriate, be sure to update the preferred clothing gender option first!
+- If you change the gender of a target Sim, you may now choose to update gender options, voice, and outfit to the vanilla gender options, voice, and outfits appropriate for the gender they are swapping to.
+- When you change global settings, the changes will now only apply after you have made all of your selections.
+- Custom Gender Settings now requires at least version 1.2 of Mod Settings Menu (MSM)
 - Custom Gender Settings now requires at least version 1.73 of S4CL
 
 Version 1.8:
