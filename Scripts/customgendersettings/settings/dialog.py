@@ -21,6 +21,9 @@ from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_acti
     CommonDialogActionOption
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_select_option import \
     CommonDialogSelectOption
+from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_toggle_option import \
+    CommonDialogToggleOption
+from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.exceptions.common_exceptions_handler import CommonExceptionHandler
 from sims4communitylib.mod_support.mod_identity import CommonModIdentity
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
@@ -77,6 +80,9 @@ class CGSGlobalSettingsDialog(HasCGSLog):
                     CGSStringId.CGS_UPDATING_ALL_SIMS_NAME,
                     CGSStringId.CGS_UPDATING_ALL_SIMS_DESCRIPTION
                 ).show(on_acknowledged=_on_acknowledged)
+            else:
+                if self._on_close is not None:
+                    self._on_close()
 
         def _reopen() -> None:
             self.open()
@@ -113,7 +119,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
                 CGSStringId.PLEASE_CONFIRM_NAME,
                 CGSStringId.PLEASE_CONFIRM_DESCRIPTION,
                 ok_text_identifier=CGSStringId.YES_UPDATE_ALL_SIMS,
-                cancel_text_identifier=CGSStringId.NO
+                cancel_text_identifier=CommonStringId.S4CL_NO
             ).show(
                 on_ok_selected=_on_ok,
                 on_cancel_selected=_on_cancel
@@ -227,7 +233,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
                 CGSStringId.PLEASE_CONFIRM_NAME,
                 CGSStringId.PLEASE_CONFIRM_DESCRIPTION,
                 ok_text_identifier=CGSStringId.YES_UPDATE_ALL_SIMS,
-                cancel_text_identifier=CGSStringId.NO
+                cancel_text_identifier=CommonStringId.S4CL_NO
             ).show(
                 on_ok_selected=_on_ok,
                 on_cancel_selected=_on_cancel
@@ -238,10 +244,10 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CGS_CAN_USE_TOILET_STANDING_NAME,
             CGSStringId.GENDER_OPTION_DESCRIPTION,
             CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_STANDING,
-            CGSStringId.YES,
-            CGSStringId.NO,
+            CommonStringId.S4CL_YES,
+            CommonStringId.S4CL_NO,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -249,10 +255,10 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
             CGSStringId.GENDER_OPTION_DESCRIPTION,
             CGSGlobalSetting.ALL_MALE_SIMS_USE_TOILET_SITTING,
-            CGSStringId.YES,
-            CGSStringId.NO,
+            CommonStringId.S4CL_YES,
+            CommonStringId.S4CL_NO,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -263,7 +269,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.ON,
             CGSStringId.OFF,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -285,7 +291,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.MASCULINE,
             CGSStringId.FEMININE,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -296,7 +302,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CAN_REPRODUCE,
             CGSStringId.CANNOT_REPRODUCE,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -307,7 +313,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CAN_IMPREGNATE,
             CGSStringId.CANNOT_IMPREGNATE,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -318,7 +324,26 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CAN_BE_IMPREGNATED,
             CGSStringId.CANNOT_BE_IMPREGNATED,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
+        )
+
+        def _on_toggle_regenerate_outfit_chosen(option_identifier: str, value: bool):
+            self._data_store.set_value_by_key(option_identifier, value)
+
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                CGSGlobalSetting.ALL_MALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED,
+                self._data_store.get_value_by_key(
+                    CGSGlobalSetting.ALL_MALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED
+                ),
+                CommonDialogOptionContext(
+                    CGSStringId.REGENERATE_ALL_OUTFITS_ON_GENDER_OPTIONS_CHANGED_NAME,
+                    CGSStringId.REGENERATE_ALL_OUTFITS_ON_GENDER_OPTIONS_CHANGED_DESCRIPTION
+                ),
+                on_chosen=_on_toggle_regenerate_outfit_chosen
+            )
         )
 
         option_dialog.show()
@@ -359,7 +384,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
                 CGSStringId.PLEASE_CONFIRM_NAME,
                 CGSStringId.PLEASE_CONFIRM_DESCRIPTION,
                 ok_text_identifier=CGSStringId.YES_UPDATE_ALL_SIMS,
-                cancel_text_identifier=CGSStringId.NO
+                cancel_text_identifier=CommonStringId.S4CL_NO
             ).show(
                 on_ok_selected=_on_ok,
                 on_cancel_selected=_on_cancel
@@ -370,10 +395,10 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CGS_CAN_USE_TOILET_STANDING_NAME,
             CGSStringId.GENDER_OPTION_DESCRIPTION,
             CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_STANDING,
-            CGSStringId.YES,
-            CGSStringId.NO,
+            CommonStringId.S4CL_YES,
+            CommonStringId.S4CL_NO,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -381,10 +406,10 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
             CGSStringId.GENDER_OPTION_DESCRIPTION,
             CGSGlobalSetting.ALL_FEMALE_SIMS_USE_TOILET_SITTING,
-            CGSStringId.YES,
-            CGSStringId.NO,
+            CommonStringId.S4CL_YES,
+            CommonStringId.S4CL_NO,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -395,7 +420,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.ON,
             CGSStringId.OFF,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -406,7 +431,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.PREFER_MENSWEAR,
             CGSStringId.PREFER_WOMENSWEAR,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -417,7 +442,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.MASCULINE,
             CGSStringId.FEMININE,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -428,7 +453,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CAN_REPRODUCE,
             CGSStringId.CANNOT_REPRODUCE,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -439,7 +464,7 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CAN_IMPREGNATE,
             CGSStringId.CANNOT_IMPREGNATE,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
         )
 
         self._add_picker_option(
@@ -450,7 +475,27 @@ class CGSGlobalSettingsDialog(HasCGSLog):
             CGSStringId.CAN_BE_IMPREGNATED,
             CGSStringId.CANNOT_BE_IMPREGNATED,
             on_chosen=_on_chosen,
-            on_close=on_close
+            on_close=_reopen
+        )
+
+        def _on_toggle_regenerate_outfit_chosen(option_identifier: str, has_trait: bool):
+            self.log.format(option_identifier=option_identifier, has_trait=has_trait)
+            self._data_store.set_value_by_key(option_identifier, has_trait)
+
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                CGSGlobalSetting.ALL_FEMALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED,
+                self._data_store.get_value_by_key(
+                    CGSGlobalSetting.ALL_FEMALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED
+                ),
+                CommonDialogOptionContext(
+                    CGSStringId.REGENERATE_ALL_OUTFITS_ON_GENDER_OPTIONS_CHANGED_NAME,
+                    CGSStringId.REGENERATE_ALL_OUTFITS_ON_GENDER_OPTIONS_CHANGED_DESCRIPTION
+                ),
+                on_chosen=_on_toggle_regenerate_outfit_chosen
+            )
         )
 
         option_dialog.show()
@@ -461,8 +506,8 @@ class CGSGlobalSettingsDialog(HasCGSLog):
         title: int,
         description: LocalizedString,
         setting_name: str,
-        on_name: int,
-        off_name: int,
+        on_name: Union[int, CommonStringId],
+        off_name: Union[int, CommonStringId],
         on_chosen: Callable[[str, Union[bool, int]], Any],
         on_close: Callable[[], Any]
     ):

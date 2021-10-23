@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<I c="Trait" i="trait" m="traits.traits" n="CGS_Exclude_From_Global_Overrides" s="11808489301864025304">
+  <L n="ages">
+    <E>TODDLER</E>
+    <E>CHILD</E>
+    <E>TEEN</E>
+    <E>YOUNGADULT</E>
+    <E>ADULT</E>
+    <E>ELDER</E>
+  </L>
+  <T n="buffs_add_on_spawn_only">False</T>
+  <T n="display_name">0xE67E542C<!--CGS: Excluded From Global Overrides--></T>
+  <T n="display_name_gender_neutral">0xE67E542C<!--CGS: Excluded From Global Overrides--></T>
+  <T n="trait_description">0xAFFCD507<!--Trait Description--></T>
+  <T n="trait_origin_description">0xFD77ED9F<!--(From Custom Gender Settings)--></T>
+  <E n="trait_type">HIDDEN</E>
+</I>

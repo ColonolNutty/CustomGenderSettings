@@ -38,6 +38,7 @@ class CGSGlobalSettingsDataStore(CommonDataStore):
             CGSGlobalSetting.ALL_MALE_SIMS_CAN_REPRODUCE: None,
             CGSGlobalSetting.ALL_MALE_SIMS_CAN_IMPREGNATE: None,
             CGSGlobalSetting.ALL_MALE_SIMS_CAN_BE_IMPREGNATED: None,
+            CGSGlobalSetting.ALL_MALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED: True,
 
             # Female Global Options
             CGSGlobalSetting.ALL_FEMALE_SIMS_BREASTS: None,
@@ -47,4 +48,5 @@ class CGSGlobalSettingsDataStore(CommonDataStore):
             CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_REPRODUCE: None,
             CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_IMPREGNATE: None,
             CGSGlobalSetting.ALL_FEMALE_SIMS_CAN_BE_IMPREGNATED: None,
+            CGSGlobalSetting.ALL_FEMALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED: True,
         }.copy()

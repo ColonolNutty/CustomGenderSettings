@@ -21,6 +21,7 @@ class CGSGlobalSetting:
     ALL_MALE_SIMS_CAN_REPRODUCE = 'cgs_all_male_sims_can_reproduce'
     ALL_MALE_SIMS_CAN_IMPREGNATE = 'cgs_all_male_sims_can_impregnate'
     ALL_MALE_SIMS_CAN_BE_IMPREGNATED = 'cgs_all_male_sims_can_be_impregnated'
+    ALL_MALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED = 'cgs_all_male_sims_regenerate_clothing_on_gender_options_changed'
 
     # Female Global Options
     ALL_FEMALE_SIMS_BREASTS = 'cgs_all_female_sims_breasts'
@@ -31,3 +32,4 @@ class CGSGlobalSetting:
     ALL_FEMALE_SIMS_CAN_REPRODUCE = 'cgs_all_female_sims_can_reproduce'
     ALL_FEMALE_SIMS_CAN_IMPREGNATE = 'cgs_all_female_sims_can_impregnate'
     ALL_FEMALE_SIMS_CAN_BE_IMPREGNATED = 'cgs_all_female_sims_can_be_impregnated'
+    ALL_FEMALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED = 'cgs_all_female_sims_regenerate_clothing_on_gender_options_changed'

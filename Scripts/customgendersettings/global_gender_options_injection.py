@@ -5,6 +5,7 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
+from customgendersettings.enums.trait_ids import CGSTraitId
 from customgendersettings.modinfo import ModInfo
 from customgendersettings.settings.setting_utils import CGSSettingUtils
 from sims.sim_info import SimInfo
@@ -14,6 +15,7 @@ from sims4communitylib.utils.cas.common_outfit_utils import CommonOutfitUtils
 from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
+from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
 
 
 class _CGSUpdateGenderOptions:
@@ -21,6 +23,8 @@ class _CGSUpdateGenderOptions:
         self._setting_utils = CGSSettingUtils()
 
     def _apply_global_updates(self, sim_info: SimInfo):
+        if CommonTraitUtils.has_trait(sim_info, CGSTraitId.CGS_EXCLUDE_FROM_GLOBAL_OVERRIDES):
+            return
         update_outfits = False
         if self._setting_utils.force_all_sims_to_male() and not CommonGenderUtils.is_male(sim_info):
             CommonGenderUtils.swap_gender(sim_info, update_outfits=False)
@@ -115,7 +119,12 @@ class _CGSUpdateGenderOptions:
                     update_outfits = True
         if update_outfits:
             CommonOutfitUtils.update_outfits(sim_info)
-            CommonOutfitUtils.regenerate_all_outfits(sim_info)
+            if CommonGenderUtils.is_male(sim_info):
+                if self._setting_utils.all_male_options.should_regenerate_outfits():
+                    CommonOutfitUtils.regenerate_all_outfits(sim_info)
+            elif CommonGenderUtils.is_female(sim_info):
+                if self._setting_utils.all_female_options.should_regenerate_outfits():
+                    CommonOutfitUtils.regenerate_all_outfits(sim_info)
 
 
 @CommonEventRegistry.handle_events(ModInfo.get_identity())

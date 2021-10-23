@@ -7,6 +7,7 @@ Copyright (c) COLONOLNUTTY
 """
 from typing import Callable, Any
 
+from customgendersettings.enums.trait_ids import CGSTraitId
 from customgendersettings.logging.has_cgs_log import HasCGSLog
 from customgendersettings.settings.dialog import CGSGlobalSettingsDialog
 from sims.sim_info import SimInfo
@@ -87,6 +88,29 @@ class CustomGenderSettingsDialog(HasCGSLog):
             )
         )
 
+        def _on_toggle_global_exclude_chosen(option_identifier: str, has_trait: bool):
+            self.log.format(option_identifier=option_identifier, has_trait=has_trait)
+            if has_trait:
+                self.log.format_with_message('Adding the trait to the Sim.', sim=self._sim_info, has_trait=has_trait)
+                CommonTraitUtils.add_trait(self._sim_info, CGSTraitId.CGS_EXCLUDE_FROM_GLOBAL_OVERRIDES)
+            else:
+                self.log.format_with_message('Removing the trait from the Sim.', sim=self._sim_info, has_trait=has_trait)
+                CommonTraitUtils.remove_trait(self._sim_info, CGSTraitId.CGS_EXCLUDE_FROM_GLOBAL_OVERRIDES)
+
+            _reopen()
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'ToggleGlobalExclude',
+                CommonTraitUtils.has_trait(self._sim_info, CGSTraitId.CGS_EXCLUDE_FROM_GLOBAL_OVERRIDES),
+                CommonDialogOptionContext(
+                    CGSStringId.EXCLUDE_THIS_SIM_FROM_GLOBAL_OVERRIDES_NAME,
+                    CGSStringId.EXCLUDE_THIS_SIM_FROM_GLOBAL_OVERRIDES_DESCRIPTION
+                ),
+                on_chosen=_on_toggle_global_exclude_chosen
+            )
+        )
+
         def _set_to_vanilla_gender_chosen() -> None:
             if CommonGenderUtils.is_male(self._sim_info):
                 CommonSimGenderOptionUtils.update_gender_options_to_vanilla_male(self._sim_info)
@@ -155,6 +179,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     CommonDialogOptionContext(
                         CommonStringId.PHYSICAL_FRAME,
                         CGSStringId.CGS_CURRENT,
+                        title_tokens=(current_body_frame,),
                         description_tokens=(current_body_frame,),
                         icon=CommonIconUtils.load_arrow_right_icon()
                     ),
@@ -176,6 +201,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     CommonDialogOptionContext(
                         CommonStringId.CLOTHING_PREFERENCE,
                         CGSStringId.CGS_CURRENT,
+                        title_tokens=(current_clothing,),
                         description_tokens=(current_clothing,),
                         icon=CommonIconUtils.load_arrow_right_icon()
                     ),
@@ -232,7 +258,10 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info),
                 CommonDialogOptionContext(
                     CGSStringId.CGS_CAN_USE_TOILET_STANDING_NAME,
-                    CGSStringId.CGS_CAN_USE_TOILET_STANDING_DESCRIPTION
+                    CGSStringId.CGS_CAN_USE_TOILET_STANDING_DESCRIPTION,
+                    title_tokens=(
+                        CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info) else CommonStringId.S4CL_NO,
+                    )
                 ),
                 on_chosen=_on_can_use_toilet_standing_chosen
             )
@@ -248,7 +277,10 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 CommonSimGenderOptionUtils.uses_toilet_sitting(self._sim_info),
                 CommonDialogOptionContext(
                     CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
-                    CGSStringId.CGS_CAN_USE_TOILET_SITTING_DESCRIPTION
+                    CGSStringId.CGS_CAN_USE_TOILET_SITTING_DESCRIPTION,
+                    title_tokens=(
+                        CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info) else CommonStringId.S4CL_NO,
+                    )
                 ),
                 on_chosen=_on_can_use_toilet_sitting_chosen
             )
