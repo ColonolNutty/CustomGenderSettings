@@ -1,3 +1,8 @@
+Version 1.10:
+- Add the ability to exclude specific Sims from the global overrides
+- Fixed an issue with the global settings menu not properly reopening the CGS settings when closed.
+- Added the ability to toggle whether clothing of Sims should be regenerated when certain gender options are changed via the Global Override
+
 Version 1.9:
 - Added options to set the voice pitch and voice actor of a Sim
 - Added many new gender options for Animal Sims
