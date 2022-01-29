@@ -1,3 +1,6 @@
+Version 1.11:
+- Fixed an issue with the "Regenerate All Outfits On Gender Options Changed" setting where it would have the opposite effect, with it off it was regenerating outfits, with it on, it was not regenerating outfits.
+
 Version 1.10:
 - Add the ability to exclude specific Sims from the global overrides
 - Fixed an issue with the global settings menu not properly reopening the CGS settings when closed.
