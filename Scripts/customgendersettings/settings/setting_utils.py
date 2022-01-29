@@ -102,7 +102,7 @@ class CGSSettingUtils:
 
         def should_regenerate_outfits(self) -> bool:
             """ Determine if all Male Sims should have their outfits regenerated. """
-            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_MALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED)
+            return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_MALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED)
 
     class AllFemaleOptions:
         """ All Female Options. """
@@ -175,7 +175,7 @@ class CGSSettingUtils:
 
         def should_regenerate_outfits(self) -> bool:
             """ Determine if all Female Sims should have their outfits regenerated. """
-            return self._setting_utils._is_forced_off(CGSGlobalSetting.ALL_FEMALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED)
+            return self._setting_utils._is_forced_on(CGSGlobalSetting.ALL_FEMALE_SIMS_REGENERATE_CLOTHING_ON_GENDER_OPTIONS_CHANGED)
 
     def _is_forced_on(self, key: str) -> bool:
         return self._get_value(key) is True
