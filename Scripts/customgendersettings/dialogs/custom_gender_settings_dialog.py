@@ -279,7 +279,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
                     CGSStringId.CGS_CAN_USE_TOILET_SITTING_DESCRIPTION,
                     title_tokens=(
-                        CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info) else CommonStringId.S4CL_NO,
+                        CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_sitting(self._sim_info) else CommonStringId.S4CL_NO,
                     )
                 ),
                 on_chosen=_on_can_use_toilet_sitting_chosen
