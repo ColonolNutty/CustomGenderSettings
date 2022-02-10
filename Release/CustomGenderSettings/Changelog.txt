@@ -1,3 +1,6 @@
+Version 1.12:
+- Fixed an issue with the Toilet Sitting option in the dialog saying YES when the Sim has the Toilet Standing trait and No when they do not.
+
 Version 1.11:
 - Fixed an issue with the "Regenerate All Outfits On Gender Options Changed" setting where it would have the opposite effect, with it off it was regenerating outfits, with it on, it was not regenerating outfits.
 
