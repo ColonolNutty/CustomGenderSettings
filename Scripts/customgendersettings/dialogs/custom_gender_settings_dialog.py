@@ -5,7 +5,9 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 Copyright (c) COLONOLNUTTY
 """
-from typing import Callable, Any
+from protocolbuffers.Localization_pb2 import LocalizedString
+from sims.global_gender_preference_tuning import GenderPreferenceType
+from typing import Callable, Any, Tuple, Union
 
 from customgendersettings.enums.trait_ids import CGSTraitId
 from customgendersettings.logging.has_cgs_log import HasCGSLog
@@ -15,6 +17,7 @@ from sims4communitylib.dialogs.common_choice_outcome import CommonChoiceOutcome
 from sims4communitylib.dialogs.common_ok_dialog import CommonOkDialog
 from sims4communitylib.dialogs.ok_cancel_dialog import CommonOkCancelDialog
 from sims4communitylib.dialogs.option_dialogs.common_choose_object_option_dialog import CommonChooseObjectOptionDialog
+from sims4communitylib.dialogs.option_dialogs.common_choose_objects_option_dialog import CommonChooseObjectsOptionDialog
 from sims4communitylib.dialogs.option_dialogs.options.common_dialog_option_context import CommonDialogOptionContext
 from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_action_option import \
     CommonDialogActionOption
@@ -26,14 +29,18 @@ from sims4communitylib.dialogs.option_dialogs.options.objects.common_dialog_togg
     CommonDialogToggleOption
 from customgendersettings.modinfo import ModInfo
 from customgendersettings.enums.strings_enum import CGSStringId
+from sims4communitylib.enums.common_gender import CommonGender
 from sims4communitylib.enums.common_voice_actor_type import CommonVoiceActorType
 from sims4communitylib.enums.strings_enum import CommonStringId
 from sims4communitylib.enums.traits_enum import CommonTraitId
 from sims4communitylib.exceptions.common_exceptions_handler import CommonExceptionHandler
 from sims4communitylib.utils.common_function_utils import CommonFunctionUtils
 from sims4communitylib.utils.common_icon_utils import CommonIconUtils
+from sims4communitylib.utils.localization.common_localization_utils import CommonLocalizationUtils
+from sims4communitylib.utils.localization.common_localized_string_colors import CommonLocalizedStringColor
 from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
+from sims4communitylib.utils.sims.common_sim_gender_preference_utils import CommonSimGenderPreferenceUtils
 from sims4communitylib.utils.sims.common_sim_voice_utils import CommonSimVoiceUtils
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
@@ -42,7 +49,7 @@ from ui.ui_dialog import UiDialogOkCancel
 
 class CustomGenderSettingsDialog(HasCGSLog):
     """ A Dialog that opens custom gender settings. """
-    def __init__(self, sim_info: SimInfo, on_close: Callable[[], None]=CommonFunctionUtils.noop):
+    def __init__(self, sim_info: SimInfo, on_close: Callable[[], None] = CommonFunctionUtils.noop):
         super().__init__()
         self._sim_info = sim_info
         self._on_close = on_close
@@ -63,7 +70,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
         except Exception as ex:
             self.log.error('Error occurred while opening custom gender settings dialog.', exception=ex)
 
-    def _settings(self, on_close: Callable[[], Any]=None) -> None:
+    def _settings(self, on_close: Callable[[], Any] = None) -> None:
         def _on_close() -> None:
             if on_close is not None:
                 on_close()
@@ -157,7 +164,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 CommonDialogOptionContext(
                     CGSStringId.CGS_SWAP_GENDER_NAME,
                     CGSStringId.CGS_SWAP_GENDER_DESCRIPTION,
-                    title_tokens=(current_gender_string,),
+                    title_tokens=(CommonLocalizationUtils.colorize(current_gender_string, text_color=CommonLocalizedStringColor.GREEN),),
                     icon=CommonIconUtils.load_arrow_right_icon()
                 ),
                 on_chosen=_on_gender_chosen
@@ -170,26 +177,24 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 CommonSimGenderOptionUtils.update_body_frame(self._sim_info, value)
                 _reopen()
 
-            current_body_frame = CommonStringId.FEMININE
+            current_body_frame_text = CommonStringId.FEMININE
             if CommonSimGenderOptionUtils.has_masculine_frame(self._sim_info):
-                current_body_frame = CommonStringId.MASCULINE
+                current_body_frame_text = CommonStringId.MASCULINE
 
             option_dialog.add_option(
                 CommonDialogActionOption(
                     CommonDialogOptionContext(
                         CommonStringId.PHYSICAL_FRAME,
-                        CGSStringId.CGS_CURRENT,
-                        title_tokens=(current_body_frame,),
-                        description_tokens=(current_body_frame,),
+                        CommonLocalizationUtils.colorize(current_body_frame_text, text_color=CommonLocalizedStringColor.GREEN),
                         icon=CommonIconUtils.load_arrow_right_icon()
                     ),
                     on_chosen=_on_physical_frame_chosen
                 )
             )
 
-            current_clothing = CommonStringId.FEMININE
+            current_clothing_text = CommonStringId.FEMININE
             if CommonSimGenderOptionUtils.prefers_menswear(self._sim_info):
-                current_clothing = CommonStringId.MASCULINE
+                current_clothing_text = CommonStringId.MASCULINE
 
             def _on_clothing_preference_chosen() -> None:
                 value = not CommonSimGenderOptionUtils.prefers_menswear(self._sim_info)
@@ -200,22 +205,20 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 CommonDialogActionOption(
                     CommonDialogOptionContext(
                         CommonStringId.CLOTHING_PREFERENCE,
-                        CGSStringId.CGS_CURRENT,
-                        title_tokens=(current_clothing,),
-                        description_tokens=(current_clothing,),
+                        CommonLocalizationUtils.colorize(current_clothing_text, text_color=CommonLocalizedStringColor.GREEN),
                         icon=CommonIconUtils.load_arrow_right_icon()
                     ),
                     on_chosen=_on_clothing_preference_chosen
                 )
             )
 
-            def _on_toggle_breasts_chosen(option_identifier: str, has_breasts: bool):
-                self.log.format(option_identifier=option_identifier, has_breasts=has_breasts)
+            def _on_toggle_breasts_chosen(option_identifier: str, _has_breasts: bool):
+                self.log.format(option_identifier=option_identifier, has_breasts=_has_breasts)
 
                 def _on_acknowledged(_) -> None:
                     _reopen()
 
-                CommonSimGenderOptionUtils.update_has_breasts(self._sim_info, has_breasts)
+                CommonSimGenderOptionUtils.update_has_breasts(self._sim_info, _has_breasts)
                 CommonOkDialog(
                     CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_NAME,
                     CGSStringId.CGS_SETTING_SAVE_RELOAD_ALERT_DESCRIPTION
@@ -225,13 +228,15 @@ class CustomGenderSettingsDialog(HasCGSLog):
             if CommonGenderUtils.is_female(self._sim_info):
                 has_vanilla_breasts = not CommonTraitUtils.has_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_OFF)
 
+            has_breasts = CommonTraitUtils.has_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_ON) or has_vanilla_breasts
+
             option_dialog.add_option(
                 CommonDialogToggleOption(
                     'ToggleBreasts',
-                    CommonTraitUtils.has_trait(self._sim_info, CommonTraitId.BREASTS_FORCE_ON) or has_vanilla_breasts,
+                    has_breasts,
                     CommonDialogOptionContext(
-                        CGSStringId.CGS_TOGGLE_BREASTS_NAME,
-                        CGSStringId.CGS_TOGGLE_BREASTS_DESCRIPTION
+                        CGSStringId.CGS_HAS_BREASTS,
+                        CommonLocalizationUtils.colorize(CommonStringId.S4CL_YES if has_breasts else CommonStringId.S4CL_NO, text_color=CommonLocalizedStringColor.GREEN)
                     ),
                     on_chosen=_on_toggle_breasts_chosen
                 )
@@ -248,6 +253,17 @@ class CustomGenderSettingsDialog(HasCGSLog):
             )
         )
 
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_SEXUAL_ORIENTATION_OPTIONS_NAME,
+                    CGSStringId.CGS_SEXUAL_ORIENTATION_OPTIONS_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
+                ),
+                on_chosen=lambda *_, **__: self._sexual_orientation_options(on_close=_reopen)
+            )
+        )
+
         def _on_can_use_toilet_standing_chosen(_: str, can_use_toilet_standing: bool):
             CommonSimGenderOptionUtils.set_can_use_toilet_standing(self._sim_info, can_use_toilet_standing)
             _reopen()
@@ -260,7 +276,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     CGSStringId.CGS_CAN_USE_TOILET_STANDING_NAME,
                     CGSStringId.CGS_CAN_USE_TOILET_STANDING_DESCRIPTION,
                     title_tokens=(
-                        CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info) else CommonStringId.S4CL_NO,
+                        CommonLocalizationUtils.colorize(CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_standing(self._sim_info) else CommonStringId.S4CL_NO, text_color=CommonLocalizedStringColor.GREEN),
                     )
                 ),
                 on_chosen=_on_can_use_toilet_standing_chosen
@@ -279,7 +295,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     CGSStringId.CGS_CAN_USE_TOILET_SITTING_NAME,
                     CGSStringId.CGS_CAN_USE_TOILET_SITTING_DESCRIPTION,
                     title_tokens=(
-                        CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_sitting(self._sim_info) else CommonStringId.S4CL_NO,
+                        CommonLocalizationUtils.colorize(CommonStringId.S4CL_YES if CommonSimGenderOptionUtils.uses_toilet_sitting(self._sim_info) else CommonStringId.S4CL_NO, text_color=CommonLocalizedStringColor.GREEN),
                     )
                 ),
                 on_chosen=_on_can_use_toilet_sitting_chosen
@@ -332,7 +348,131 @@ class CustomGenderSettingsDialog(HasCGSLog):
 
         option_dialog.show(sim_info=self._sim_info)
 
-    def _pregnancy_options(self, on_close: Callable[[], None]=None) -> None:
+    def _sexual_orientation_options(self, on_close: Callable[[], None] = None) -> None:
+        def _on_close() -> None:
+            if on_close is not None:
+                on_close()
+
+        def _reopen() -> None:
+            self._sexual_orientation_options(on_close=on_close)
+
+        option_dialog = CommonChooseObjectOptionDialog(
+            CGSStringId.CGS_SEXUAL_ORIENTATION_OPTIONS_NAME,
+            CGSStringId.CGS_SEXUAL_ORIENTATION_OPTIONS_DESCRIPTION,
+            mod_identity=self.mod_identity,
+            on_close=_on_close
+        )
+
+        def _is_exploring_sexuality(option_identifier: str, _is_exploring_sexuality: bool):
+            self.log.format(option_identifier=option_identifier, is_exploring_sexuality=_is_exploring_sexuality)
+            value = not CommonSimGenderOptionUtils.is_exploring_sexuality(self._sim_info)
+            CommonSimGenderOptionUtils.set_is_exploring_sexuality(self._sim_info, value)
+            _reopen()
+
+        is_exploring_sexuality = CommonSimGenderOptionUtils.is_exploring_sexuality(self._sim_info)
+        is_exploring_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.create_localized_string(CommonStringId.S4CL_YES if is_exploring_sexuality else CommonStringId.S4CL_NO), text_color=CommonLocalizedStringColor.GREEN)
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'IsExploringSexuality',
+                CommonSimGenderOptionUtils.is_exploring_sexuality(self._sim_info),
+                CommonDialogOptionContext(
+                    CommonStringId.THIS_SIM_IS_EXPLORING_ROMANTICALLY,
+                    is_exploring_text
+                ),
+                on_chosen=_is_exploring_sexuality
+            )
+        )
+
+        preferred_romantic_genders = CommonSimGenderPreferenceUtils.determine_preferred_genders(self._sim_info, preference_type=GenderPreferenceType.ROMANTIC)
+        if preferred_romantic_genders:
+            preferred_romantic_gender_display_text_list = [CommonGender.convert_to_localized_string_id(gender) for gender in preferred_romantic_genders]
+            preferred_romantic_gender_display_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.combine_localized_strings_with_comma_space_and(preferred_romantic_gender_display_text_list), text_color=CommonLocalizedStringColor.GREEN)
+        else:
+            preferred_romantic_gender_display_text = CommonLocalizationUtils.colorize(CommonStringId.S4CL_NONE, text_color=CommonLocalizedStringColor.GREEN)
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CommonStringId.THIS_SIM_IS_ROMANTICALLY_ATTRACTED_TO,
+                    preferred_romantic_gender_display_text,
+                    icon=CommonIconUtils.load_arrow_right_icon()
+                ),
+                on_chosen=lambda *_, **__: self._modify_sexual_orientation(GenderPreferenceType.ROMANTIC, CommonStringId.THIS_SIM_IS_ROMANTICALLY_ATTRACTED_TO, preferred_romantic_gender_display_text, on_close=_reopen)
+            )
+        )
+
+        preferred_woohoo_genders = CommonSimGenderPreferenceUtils.determine_preferred_genders(self._sim_info, preference_type=GenderPreferenceType.WOOHOO)
+
+        if preferred_woohoo_genders:
+            preferred_woohoo_gender_display_text_list = [CommonGender.convert_to_localized_string_id(gender) for gender in preferred_woohoo_genders]
+            preferred_woohoo_gender_display_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.combine_localized_strings_with_comma_space_and(preferred_woohoo_gender_display_text_list), text_color=CommonLocalizedStringColor.GREEN)
+        else:
+            preferred_woohoo_gender_display_text = CommonLocalizationUtils.colorize(CommonStringId.S4CL_NONE, text_color=CommonLocalizedStringColor.GREEN)
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CommonStringId.THIS_SIM_IS_INTERESTED_IN_WOOHOO_WITH,
+                    preferred_woohoo_gender_display_text,
+                    icon=CommonIconUtils.load_arrow_right_icon()
+                ),
+                on_chosen=lambda *_, **__: self._modify_sexual_orientation(GenderPreferenceType.WOOHOO, CommonStringId.THIS_SIM_IS_INTERESTED_IN_WOOHOO_WITH, preferred_woohoo_gender_display_text, on_close=_reopen)
+            )
+        )
+
+        option_dialog.show(sim_info=self._sim_info)
+
+    def _modify_sexual_orientation(self, preference_type: GenderPreferenceType, title: Union[int, CommonStringId, LocalizedString], description: Union[int, CommonStringId, LocalizedString], on_close: Callable[[], None]) -> None:
+        def _on_close() -> None:
+            on_close()
+
+        option_dialog = CommonChooseObjectsOptionDialog(
+            title,
+            description,
+            mod_identity=self.mod_identity,
+            on_close=_on_close
+        )
+
+        def _on_submit(_chosen_genders: Tuple[CommonGender]):
+            if _chosen_genders is None:
+                _on_close()
+                return
+            for _chosen_gender in CommonGender.get_all():
+                if _chosen_gender in _chosen_genders:
+                    CommonSimGenderPreferenceUtils.set_preference_for_gender(self._sim_info, _chosen_gender, True, preference_type=preference_type)
+                else:
+                    CommonSimGenderPreferenceUtils.set_preference_for_gender(self._sim_info, _chosen_gender, False, preference_type=preference_type)
+            _on_close()
+
+        current_preferred_genders = CommonSimGenderPreferenceUtils.determine_preferred_genders(self._sim_info, preference_type=preference_type)
+
+        for gender in CommonGender.get_all():
+            icon = CommonIconUtils.load_unfilled_circle_icon()
+            is_selected = gender in current_preferred_genders
+            if is_selected:
+                icon = CommonIconUtils.load_checked_circle_icon()
+            option_dialog.add_option(
+                CommonDialogSelectOption(
+                    gender.name,
+                    gender,
+                    CommonDialogOptionContext(
+                        CommonGender.convert_to_localized_string_id(gender),
+                        0,
+                        icon=icon,
+                        is_selected=is_selected
+                    )
+                )
+            )
+
+        option_dialog.show(
+            sim_info=self._sim_info,
+            on_submit=_on_submit,
+            min_selectable=0,
+            max_selectable=option_dialog.option_count
+        )
+
+    def _pregnancy_options(self, on_close: Callable[[], None] = None) -> None:
         def _on_close() -> None:
             if on_close is not None:
                 on_close()
@@ -356,10 +496,10 @@ class CustomGenderSettingsDialog(HasCGSLog):
                 CommonSimGenderOptionUtils.update_can_reproduce(self._sim_info, value)
                 _reopen()
 
-            current_selected = CGSStringId.NATURAL
+            current_selected_text = CGSStringId.NATURAL
             can_reproduce = CommonSimGenderOptionUtils.can_reproduce(self._sim_info)
             if not can_reproduce:
-                current_selected = CGSStringId.FIXED
+                current_selected_text = CGSStringId.FIXED
 
             option_dialog.add_option(
                 CommonDialogToggleOption(
@@ -367,8 +507,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     can_reproduce,
                     CommonDialogOptionContext(
                         CGSStringId.REPRODUCTIVE_SETTINGS,
-                        CGSStringId.CGS_CURRENT,
-                        description_tokens=(current_selected,),
+                        CommonLocalizationUtils.colorize(current_selected_text, text_color=CommonLocalizedStringColor.GREEN),
                         icon=CommonIconUtils.load_question_mark_icon()
                     ),
                     on_chosen=_on_reproductive_chosen
@@ -413,7 +552,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
 
         option_dialog.show(sim_info=self._sim_info)
 
-    def _set_voice_actor(self, on_close: Callable[[], None]=None) -> None:
+    def _set_voice_actor(self, on_close: Callable[[], None] = None) -> None:
         def _on_close() -> None:
             if on_close is not None:
                 on_close()
