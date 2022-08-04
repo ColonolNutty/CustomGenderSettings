@@ -362,12 +362,20 @@ class CustomGenderSettingsDialog(HasCGSLog):
             mod_identity=self.mod_identity,
             on_close=_on_close
         )
+        self._build_sexual_orientation_options(option_dialog, _on_close, _reopen)
 
+        if not option_dialog.has_options():
+            _on_close()
+            return
+
+        option_dialog.show(sim_info=self._sim_info)
+
+    def _build_sexual_orientation_options(self, option_dialog: CommonChooseObjectOptionDialog, on_close: Callable[[], None], reopen: Callable[[], None]) -> None:
         def _is_exploring_sexuality(option_identifier: str, _is_exploring_sexuality: bool):
             self.log.format(option_identifier=option_identifier, is_exploring_sexuality=_is_exploring_sexuality)
             value = not CommonSimGenderOptionUtils.is_exploring_sexuality(self._sim_info)
             CommonSimGenderOptionUtils.set_is_exploring_sexuality(self._sim_info, value)
-            _reopen()
+            reopen()
 
         is_exploring_sexuality = CommonSimGenderOptionUtils.is_exploring_sexuality(self._sim_info)
         is_exploring_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.create_localized_string(CommonStringId.S4CL_YES if is_exploring_sexuality else CommonStringId.S4CL_NO), text_color=CommonLocalizedStringColor.GREEN)
@@ -398,7 +406,7 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     preferred_romantic_gender_display_text,
                     icon=CommonIconUtils.load_arrow_right_icon()
                 ),
-                on_chosen=lambda *_, **__: self._modify_sexual_orientation(GenderPreferenceType.ROMANTIC, CommonStringId.THIS_SIM_IS_ROMANTICALLY_ATTRACTED_TO, preferred_romantic_gender_display_text, on_close=_reopen)
+                on_chosen=lambda *_, **__: self._modify_sexual_orientation(GenderPreferenceType.ROMANTIC, CommonStringId.THIS_SIM_IS_ROMANTICALLY_ATTRACTED_TO, preferred_romantic_gender_display_text, on_close=reopen)
             )
         )
 
@@ -417,11 +425,9 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     preferred_woohoo_gender_display_text,
                     icon=CommonIconUtils.load_arrow_right_icon()
                 ),
-                on_chosen=lambda *_, **__: self._modify_sexual_orientation(GenderPreferenceType.WOOHOO, CommonStringId.THIS_SIM_IS_INTERESTED_IN_WOOHOO_WITH, preferred_woohoo_gender_display_text, on_close=_reopen)
+                on_chosen=lambda *_, **__: self._modify_sexual_orientation(GenderPreferenceType.WOOHOO, CommonStringId.THIS_SIM_IS_INTERESTED_IN_WOOHOO_WITH, preferred_woohoo_gender_display_text, on_close=reopen)
             )
         )
-
-        option_dialog.show(sim_info=self._sim_info)
 
     def _modify_sexual_orientation(self, preference_type: GenderPreferenceType, title: Union[int, CommonStringId, LocalizedString], description: Union[int, CommonStringId, LocalizedString], on_close: Callable[[], None]) -> None:
         def _on_close() -> None:
