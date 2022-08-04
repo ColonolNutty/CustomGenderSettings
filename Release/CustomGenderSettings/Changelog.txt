@@ -1,3 +1,7 @@
+Version 1.13:
+- Added the ability to modify sexual orientation (Is Exploring Sexuality, Is Interested In Romance With, Is Interested In Woohoo With)
+- CGS now requires at least version 1.81 of Sims 4 Community Library.
+
 Version 1.12:
 - Fixed an issue with the Toilet Sitting option in the dialog saying YES when the Sim has the Toilet Standing trait and No when they do not.
 
