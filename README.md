@@ -26,6 +26,10 @@ For more SFW mods like this, support me at my Patreon: https://www.patreon.com/c
     - Can Get Pregnant
   - Breasts
     - Add and Remove Breasts on your Sims.
+  - Preferences
+    - Is Exploring Sexuality
+    - Is Romantically Attracted To Gender
+    - Is Woohoo Attracted To Gender
 - Pet Sim Custom Gender Options
   - Reproductive Ability
     - Natural
@@ -58,7 +62,7 @@ For more SFW mods like this, support me at my Patreon: https://www.patreon.com/c
 
 - Download and install The Sims 4 Community Library (link in the Requirements section)
 - Download this mod
-- Unpack the this mods archive and drop the files from it into your Mods folder (...\The Sims 4\Mods\)
+- Unpack the this mods archive and drop the files from it into your The Sims 4 folder (...\The Sims 4\)
 - Enjoy
 
 
@@ -74,7 +78,7 @@ For more SFW mods like this, support me at my Patreon: https://www.patreon.com/c
 ### Requirements:
 
 - Sims 4 version 1.77.131.1030 (Cottage Living Patch) or above
-- At least version 1.73 of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/download/v1.73/sims4communitylib.v1.73.zip)
+- At least version 2.0 of [The Sims 4 Community Library](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/download/v2.0/sims4communitylib.v2.0.zip)
 
 
 ### Troubleshooting Steps:
