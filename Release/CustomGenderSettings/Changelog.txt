@@ -1,3 +1,7 @@
+Version 1.14:
+- CGS now enables the can and cannot reproduce pet traits for Fox Sims.
+- Removed the included mod_data folder because it is pointless now.
+
 Version 1.13:
 - Added the ability to modify sexual orientation (Is Exploring Sexuality, Is Interested In Romance With, Is Interested In Woohoo With)
 - CGS now requires at least version 2.0 of Sims 4 Community Library.
