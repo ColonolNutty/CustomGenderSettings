@@ -1,3 +1,0 @@
-This file should be at "Mods/mod_data/PlaceThisModDataFolderTopLevel.txt"
-
-Do not change its folder structure and do not put mod_data in a subfolder!
