@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <I c="Trait" i="trait" m="traits.traits" n="CGS_Exclude_From_Global_Overrides" s="11808489301864025304">
   <L n="ages">
+    <E>INFANT</E>
     <E>TODDLER</E>
     <E>CHILD</E>
     <E>TEEN</E>

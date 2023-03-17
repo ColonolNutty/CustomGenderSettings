@@ -264,6 +264,37 @@ class CustomGenderSettingsDialog(HasCGSLog):
             )
         )
 
+        can_produce_milk_trait_id = 274985  # trait_GenderOptions_Lactate_Can
+        cannot_produce_milk_trait_id = 275052  # trait_GenderOptions_Lactate_CanNot
+
+        def _on_can_produce_milk_chosen(_: str, _can_produce_milk: bool):
+            if _can_produce_milk:
+                CommonTraitUtils.remove_trait(self._sim_info, cannot_produce_milk_trait_id)
+                CommonTraitUtils.add_trait(self._sim_info, can_produce_milk_trait_id)
+            else:
+                CommonTraitUtils.remove_trait(self._sim_info, can_produce_milk_trait_id)
+                CommonTraitUtils.add_trait(self._sim_info, cannot_produce_milk_trait_id)
+            _reopen()
+
+        can_produce_milk = CommonTraitUtils.has_trait(self._sim_info, can_produce_milk_trait_id)
+        if CommonTraitUtils.has_trait(self._sim_info, cannot_produce_milk_trait_id):
+            can_produce_milk = False
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'CanProduceMilk',
+                can_produce_milk,
+                CommonDialogOptionContext(
+                    CGSStringId.CGS_CAN_PRODUCE_MILK_NAME,
+                    CGSStringId.CGS_CAN_PRODUCE_MILK_DESCRIPTION,
+                    title_tokens=(
+                        CommonLocalizationUtils.colorize(CommonStringId.S4CL_YES if can_produce_milk else CommonStringId.S4CL_NO, text_color=CommonLocalizedStringColor.GREEN),
+                    )
+                ),
+                on_chosen=_on_can_produce_milk_chosen
+            )
+        )
+
         def _on_can_use_toilet_standing_chosen(_: str, can_use_toilet_standing: bool):
             CommonSimGenderOptionUtils.set_can_use_toilet_standing(self._sim_info, can_use_toilet_standing)
             _reopen()

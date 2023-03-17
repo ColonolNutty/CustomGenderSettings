@@ -1,3 +1,6 @@
+Version 1.15:
+- Added the ability to change the "Can Produce Milk" setting for Sims.
+
 Version 1.14:
 - CGS now enables the can and cannot reproduce pet traits for Fox Sims.
 - Removed the included mod_data folder because it is pointless now.

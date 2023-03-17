@@ -3,6 +3,7 @@
   <Instances>
     <I name="CGS_Exclude_From_Global_Overrides" schema="Trait" type="Object">
       <L name="ages">
+        <T type="Int64">128</T>
         <T type="Int64">2</T>
         <T type="Int64">4</T>
         <T type="Int64">8</T>
