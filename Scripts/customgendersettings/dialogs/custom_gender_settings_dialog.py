@@ -41,6 +41,7 @@ from sims4communitylib.utils.localization.common_localized_string_colors import 
 from sims4communitylib.utils.sims.common_gender_utils import CommonGenderUtils
 from sims4communitylib.utils.sims.common_sim_gender_option_utils import CommonSimGenderOptionUtils
 from sims4communitylib.utils.sims.common_sim_gender_preference_utils import CommonSimGenderPreferenceUtils
+from sims4communitylib.utils.sims.common_sim_relationship_expectation_utils import CommonSimRelationshipExpectationUtils
 from sims4communitylib.utils.sims.common_sim_voice_utils import CommonSimVoiceUtils
 from sims4communitylib.utils.sims.common_species_utils import CommonSpeciesUtils
 from sims4communitylib.utils.sims.common_trait_utils import CommonTraitUtils
@@ -261,6 +262,17 @@ class CustomGenderSettingsDialog(HasCGSLog):
                     icon=CommonIconUtils.load_arrow_navigate_into_icon()
                 ),
                 on_chosen=lambda *_, **__: self._sexual_orientation_options(on_close=_reopen)
+            )
+        )
+
+        option_dialog.add_option(
+            CommonDialogActionOption(
+                CommonDialogOptionContext(
+                    CGSStringId.ROMANTIC_BOUNDARIES,
+                    CGSStringId.CGS_ROMANTIC_BOUNDARIES_DESCRIPTION,
+                    icon=CommonIconUtils.load_arrow_navigate_into_icon()
+                ),
+                on_chosen=lambda *_, **__: self._relationship_expectation_options(on_close=_reopen)
             )
         )
 
@@ -485,10 +497,10 @@ class CustomGenderSettingsDialog(HasCGSLog):
         current_preferred_genders = CommonSimGenderPreferenceUtils.determine_preferred_genders(self._sim_info, preference_type=preference_type)
 
         for gender in CommonGender.get_all():
-            icon = CommonIconUtils.load_unfilled_circle_icon()
+            icon = CommonIconUtils.load_unchecked_square_icon()
             is_selected = gender in current_preferred_genders
             if is_selected:
-                icon = CommonIconUtils.load_checked_circle_icon()
+                icon = CommonIconUtils.load_checked_square_icon()
             option_dialog.add_option(
                 CommonDialogSelectOption(
                     gender.name,
@@ -507,6 +519,117 @@ class CustomGenderSettingsDialog(HasCGSLog):
             on_submit=_on_submit,
             min_selectable=0,
             max_selectable=option_dialog.option_count
+        )
+
+    def _relationship_expectation_options(self, on_close: Callable[[], None] = None) -> None:
+        def _on_close() -> None:
+            if on_close is not None:
+                on_close()
+
+        def _reopen() -> None:
+            self._relationship_expectation_options(on_close=on_close)
+
+        option_dialog = CommonChooseObjectOptionDialog(
+            CGSStringId.ROMANTIC_BOUNDARIES,
+            CGSStringId.CGS_ROMANTIC_BOUNDARIES_DESCRIPTION,
+            mod_identity=self.mod_identity,
+            on_close=_on_close
+        )
+        self._build_relationship_expectation_options(option_dialog, _on_close, _reopen)
+
+        if not option_dialog.has_options():
+            _on_close()
+            return
+
+        option_dialog.show(sim_info=self._sim_info)
+
+    def _build_relationship_expectation_options(self, option_dialog: CommonChooseObjectOptionDialog, on_close: Callable[[], None], reopen: Callable[[], None]) -> None:
+        def _is_open_to_change(option_identifier: str, _is_open_to_change: bool):
+            self.log.format(option_identifier=option_identifier, _is_open_to_change=_is_open_to_change)
+            value = not CommonSimRelationshipExpectationUtils.is_open_to_change(self._sim_info)
+            CommonSimRelationshipExpectationUtils.set_open_to_change(self._sim_info, value)
+            reopen()
+
+        is_open_to_change = CommonSimRelationshipExpectationUtils.is_open_to_change(self._sim_info)
+        is_open_to_change_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.create_localized_string(CommonStringId.S4CL_YES if is_open_to_change else CommonStringId.S4CL_NO), text_color=CommonLocalizedStringColor.GREEN)
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'IsOpenToChange',
+                CommonSimRelationshipExpectationUtils.is_open_to_change(self._sim_info),
+                CommonDialogOptionContext(
+                    CGSStringId.THIS_SIM_JEALOUSY_CAN_CHANGE_BY_TALKING,
+                    is_open_to_change_text,
+                    title_tokens=(self._sim_info,)
+                ),
+                on_chosen=_is_open_to_change
+            )
+        )
+
+        def _has_emotional_exclusivity(option_identifier: str, _has_emotional_exclusivity: bool):
+            self.log.format(option_identifier=option_identifier, _has_emotional_exclusivity=_has_emotional_exclusivity)
+            value = not CommonSimRelationshipExpectationUtils.has_emotional_exclusivity(self._sim_info)
+            CommonSimRelationshipExpectationUtils.set_emotional_exclusivity(self._sim_info, value)
+            reopen()
+
+        has_emotional_exclusivity = CommonSimRelationshipExpectationUtils.has_emotional_exclusivity(self._sim_info)
+        has_emotional_exclusivity_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.create_localized_string(CommonStringId.S4CL_YES if has_emotional_exclusivity else CommonStringId.S4CL_NO), text_color=CommonLocalizedStringColor.GREEN)
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'HasEmotionalExclusivity',
+                CommonSimRelationshipExpectationUtils.has_emotional_exclusivity(self._sim_info),
+                CommonDialogOptionContext(
+                    CGSStringId.THIS_SIM_FEELS_JEALOUS_NON_PHYSICAL_ROMANCE,
+                    has_emotional_exclusivity_text,
+                    title_tokens=(self._sim_info,)
+                ),
+                on_chosen=_has_emotional_exclusivity
+            )
+        )
+
+        def _has_physical_exclusivity(option_identifier: str, _has_physical_exclusivity: bool):
+            self.log.format(option_identifier=option_identifier, _has_physical_exclusivity=_has_physical_exclusivity)
+            value = not CommonSimRelationshipExpectationUtils.has_physical_exclusivity(self._sim_info)
+            CommonSimRelationshipExpectationUtils.set_physical_exclusivity(self._sim_info, value)
+            reopen()
+
+        has_physical_exclusivity = CommonSimRelationshipExpectationUtils.has_physical_exclusivity(self._sim_info)
+        has_physical_exclusivity_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.create_localized_string(CommonStringId.S4CL_YES if has_physical_exclusivity else CommonStringId.S4CL_NO), text_color=CommonLocalizedStringColor.GREEN)
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'HasPhysicalExclusivity',
+                CommonSimRelationshipExpectationUtils.has_physical_exclusivity(self._sim_info),
+                CommonDialogOptionContext(
+                    CGSStringId.THIS_SIM_FEELS_JEALOUS_PHYSICAL_EXCLUDING_WOOHOO,
+                    has_physical_exclusivity_text,
+                    title_tokens=(self._sim_info,)
+                ),
+                on_chosen=_has_physical_exclusivity
+            )
+        )
+
+        def _has_woohoo_exclusivity(option_identifier: str, _has_woohoo_exclusivity: bool):
+            self.log.format(option_identifier=option_identifier, _has_woohoo_exclusivity=_has_woohoo_exclusivity)
+            value = not CommonSimRelationshipExpectationUtils.has_woohoo_exclusivity(self._sim_info)
+            CommonSimRelationshipExpectationUtils.set_woohoo_exclusivity(self._sim_info, value)
+            reopen()
+
+        has_woohoo_exclusivity = CommonSimRelationshipExpectationUtils.has_woohoo_exclusivity(self._sim_info)
+        has_woohoo_exclusivity_text = CommonLocalizationUtils.colorize(CommonLocalizationUtils.create_localized_string(CommonStringId.S4CL_YES if has_woohoo_exclusivity else CommonStringId.S4CL_NO), text_color=CommonLocalizedStringColor.GREEN)
+
+        option_dialog.add_option(
+            CommonDialogToggleOption(
+                'HasWoohooExclusivity',
+                CommonSimRelationshipExpectationUtils.has_woohoo_exclusivity(self._sim_info),
+                CommonDialogOptionContext(
+                    CGSStringId.THIS_SIM_FEELS_JEALOUS_PHYSICAL_WOOHOO,
+                    has_woohoo_exclusivity_text,
+                    title_tokens=(self._sim_info,)
+                ),
+                on_chosen=_has_woohoo_exclusivity
+            )
         )
 
     def _pregnancy_options(self, on_close: Callable[[], None] = None) -> None:
