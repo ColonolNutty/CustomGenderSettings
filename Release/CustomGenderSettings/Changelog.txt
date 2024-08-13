@@ -1,3 +1,6 @@
+Version 1.16:
+- Added Romantic Boundaries from the Lovestruck patch.
+
 Version 1.15:
 - Added the ability to change the "Can Produce Milk" setting for Sims.
 
